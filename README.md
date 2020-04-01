@@ -41,4 +41,4 @@ After reviewing and developing a clearer testing framework for the Python codeba
 - `simulate_data` is not yet implemented.
 
 ## Summary
-Core functions are implemented but still need to be substantially tested/bug-fixed; after that, visualization functions can be implemented and tested. Seems comfortably doable within 1-2 weeks?
+Core functions are implemented but still need to be substantially tested/bug-fixed; after that, visualization functions can be implemented and tested.
