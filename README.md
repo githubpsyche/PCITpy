@@ -35,7 +35,7 @@ After reviewing and developing a clearer testing framework for the Python codeba
 - `analyze_outputs` and `jbfill` are not yet implemented.
 - `savesamesize` probably doesn't need a Python analogue at all, though I may be wrong.
 
-## Core Functions
+### Core Functions
 - `run_importance_sampler` and `preprocessing_setup` are all fully implemented and tested in Python. 
 - `importance_sampler`, `family_of_distributions`, `common_to_all_curves`, and `family_of_curves` are implemented but not fully tested and thus are certainly still quite buggy.
 - `simulate_data` is not yet implemented.
