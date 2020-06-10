@@ -435,6 +435,8 @@ def test_preprocessing_setup():
     
     print('key python_value matlab_value')
     for key in python_analysis_settings:
+        if key == 'net_effect_clusters':
+            continue
         print(key, python_analysis_settings[key], matlab_analysis_settings[key])
 
 
@@ -468,6 +470,7 @@ def scramble_dependent_variable(target_dependent_variables, target_net_effect_cl
     sorted_neteff_clusters = np.sort(target_net_effect_clusters)
     sorted_neteff_clusters_indices = np.argsort(target_net_effect_clusters)
     just_ones = np.ones(np.shape(sorted_neteff_clusters)) # Populate a vector full of ones
+
     # compute the length of each net effect cluster
     # e.g. for [3, 5, 3, 7, 7, 5, 8] will return [2, 2, 2, 1] i.e. 3 is repeated twice and so on
     length_each_neteff_cluster = np.transpose(np.bincount(sorted_neteff_clusters))
@@ -484,15 +487,54 @@ def scramble_dependent_variable(target_dependent_variables, target_net_effect_cl
     # Now we will need to repeat each scrambled dependent variable for the length of that net effect cluster. The next three lines will result in
     # [0, 0, 0, 0, 1, 1, 1] corresponding to [3, 3, 5, 5, 7, 7, 8] since the scrambled dependent variable looks like [0, 0, 1, 1] for [3, 5, 7, 8]
     cumsum_clutsers = np.cumsum(length_each_neteff_cluster)
-    indicator_vector = np.zeros((1, cumsum_clutsers[-1]))
-    indicator_vector[[0] + [cumsum_clutsers[:-1]]] = 1
+    indicator_vector = np.zeros((cumsum_clutsers[-1]))
+    indicator_vector[np.append(np.array([0]), [cumsum_clutsers[:-1]])] = 1
 
     # Store the scrambled dependent variable in the respective cluster locations
     # The original vector looked like [3, 5, 3, 7, 7, 5, 8] so the scrambled vector will look like [0, 0, 0, 1, 1, 0, 1]
     scrambled_vector = np.full(np.shape(sorted_neteff_clusters_indices), np.nan)
-    scrambled_vector[sorted_neteff_clusters_indices] = scrambled_dependent_variables[np.cumsum(indicator_vector)]
+    print(scrambled_dependent_variables)
+    print(np.cumsum(indicator_vector.astype(int)))
+    scrambled_dependent_variables[np.cumsum(indicator_vector.astype(int))-1]
+    scrambled_vector[np.array(sorted_neteff_clusters_indices)] = scrambled_dependent_variables[np.cumsum(indicator_vector.astype(int))-1]
 
     if np.any(np.isnan(scrambled_vector)):
         raise ValueError('Nan''s in scrambled dependent variable vector!')
         
     return scrambled_vector
+
+
+scramble_dependent_variable(np.array([1, 0, 1, 0, 0, 0, 1]), np.array([3, 5, 3, 7, 7, 5, 8]))
+
+
+def test_scramble_dependent_variable():
+    # numpy
+    import numpy as np 
+    
+    # package enabling access/control of matlab from python
+    import matlab.engine
+    
+    # matlab instance with relevant paths
+    eng = matlab.engine.start_matlab()
+    
+    # paths to matlab helper and model functions
+    eng.addpath('../original')
+    
+    # generate input data and settings
+    from run_importance_sampler import modified_run_importance_sampler
+    python_data, python_analysis_settings = modified_run_importance_sampler()
+    matlab_data, matlab_analysis_settings = eng.modified_run_importance_sampler(nargout=2)
+    
+    # generate output
+    python_data, python_analysis_settings = preprocessing_setup(python_data, python_analysis_settings)
+    matlab_data, matlab_analysis_settings = eng.preprocessing_setup(matlab_data, matlab_analysis_settings, nargout=2)
+    
+    # tests
+    matlab_data = np.asarray(matlab_data)
+    assert np.all(np.asarray(matlab_data) == np.asarray(python_data))
+    
+    print('key python_value matlab_value')
+    for key in python_analysis_settings:
+        if key == 'net_effect_clusters':
+            continue
+        print(key, python_analysis_settings[key], matlab_analysis_settings[key])
