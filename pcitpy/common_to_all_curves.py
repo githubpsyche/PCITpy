@@ -1,3 +1,4 @@
+# %% [markdown]
 # # common_to_all_curves
 # To peform sanity checks on the input data and the algorithm parameter struct. Massage the data (i.e. drop outliers, zscore data, etc)
 #
@@ -22,7 +23,7 @@
 # - common_to_all_curves('horz_indpnt', 'auto_generate', 'con', 4)
 # - common_to_all_curves('horz_indpnt', 'weighted_curve', importance_sampler_mat, 0.9, 4)
 
-# +
+# %%
 import numpy as np
 from family_of_curves import family_of_curves
 from round_to import round_to
@@ -209,8 +210,7 @@ def common_to_all_curves(curve_type, get_info, *varargin):
     return out
 
 
-# -
-
+# %% [markdown]
 # ## Testing
 # - common_to_all_curves('horz_indpnt', 'initial_sampling', 1000, 4)
 # - common_to_all_curves('horz_indpnt', 'check_if_exceed_bounds', some_matrix)
@@ -220,6 +220,7 @@ def common_to_all_curves(curve_type, get_info, *varargin):
 # - common_to_all_curves('horz_indpnt', 'auto_generate', 'con', 4)
 # - common_to_all_curves('horz_indpnt', 'weighted_curve', importance_sampler_mat, 0.9, 4)
 
+# %%
 def test_common_to_all_curves():
     
     # numpy
@@ -265,10 +266,11 @@ def test_common_to_all_curves():
     print('All tests passed!')
 
 
+# %%
 # run tests only when this is main file!
 if __name__ == '__main__':
     test_common_to_all_curves()
 
+# %%
 
-
-
+# %%

@@ -1,3 +1,4 @@
+# %% [markdown]
 # # run_importance_sampler
 # sets up the data matrix (number of samples x 6 columns) and the 'analysis_settings' struct with algorithm parameters
 #
@@ -10,7 +11,7 @@
 # **OUTPUTS**:
 # - None
 
-# +
+# %%
 from scipy.io import loadmat
 import os
 
@@ -76,13 +77,13 @@ def run_importance_sampler():
     importance_sampler(raw_data, analysis_settings)
 
 
-# -
-
+# %% [markdown]
 # ## Testing
 # `run_importance_sampler` is designed to be modified to specify P-CIT parameters before execute. We produce customized version of the function (`test_run_importance_sampler`) that alters where data is sourced from into `data/test/test.m`
 #
 # Furthermore, to test implementation equivalence, we also prevent the function from calling `importance_sampler` in its last line, and instead return its main products `raw_data` and `analysis_settings` for comparison between MATLAB and Python implementations.
 
+# %%
 def modified_run_importance_sampler():
     
     # Populating the analysis_settings struct with algorithm settings
@@ -144,6 +145,7 @@ def modified_run_importance_sampler():
     return data, analysis_settings
 
 
+# %%
 def test_run_importance_sampler():
     # numpy
     import numpy as np 
@@ -167,8 +169,9 @@ def test_run_importance_sampler():
         print(key, python_analysis_settings[key], matlab_analysis_settings[key])
 
 
+# %%
 # run tests only when is main file!
 if __name__ == '__main__':
     test_run_importance_sampler()
 
-
+# %%

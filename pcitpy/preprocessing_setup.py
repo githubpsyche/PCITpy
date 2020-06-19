@@ -1,3 +1,4 @@
+# %% [markdown]
 # # preprocessing_setup
 # To peform sanity checks on the input data and the algorithm parameter struct. Massage the data (i.e. drop outliers, zscore data, etc)
 #
@@ -12,7 +13,7 @@
 # - data: Input data matrix (if applicable, outlier free, zscored, category specific data only, etc)
 # - analysis_settings: Struct with algorithm parameters; some additional parameters are added to this struct as well
 
-# +
+# %%
 # helper functions from pcitpy
 from family_of_curves import family_of_curves
 from round_to import round_to
@@ -403,10 +404,10 @@ def preprocessing_setup(data, analysis_settings):
     return data, analysis_settings
 
 
-# -
-
+# %% [markdown]
 # ## Testing
 
+# %%
 def test_preprocessing_setup():
     # numpy
     import numpy as np 
@@ -440,11 +441,13 @@ def test_preprocessing_setup():
         print(key, python_analysis_settings[key], matlab_analysis_settings[key])
 
 
+# %%
 # run tests only when is main file!
 if __name__ == '__main__':
     test_preprocessing_setup()
 
 
+# %% [markdown]
 # # scramble_dependent_variable(target_dependent_variables, target_net_effect_clusters)
 # To take a dependent variable vector and scramble it such that the net effect cluster groupings are NOT violated
 #
@@ -458,6 +461,7 @@ if __name__ == '__main__':
 # **OUTPUTS**:
 # - scrambled_vector: A scrambled vector
 
+# %%
 def scramble_dependent_variable(target_dependent_variables, target_net_effect_clusters):
     if np.logical_not(np.shape(target_dependent_variables) == np.shape(target_net_effect_clusters)):
         raise ValueError('Size of input vectors must be the same!')
@@ -504,9 +508,11 @@ def scramble_dependent_variable(target_dependent_variables, target_net_effect_cl
     return scrambled_vector
 
 
+# %%
 scramble_dependent_variable(np.array([1, 0, 1, 0, 0, 0, 1]), np.array([3, 5, 3, 7, 7, 5, 8]))
 
 
+# %%
 def test_scramble_dependent_variable():
     # numpy
     import numpy as np 
