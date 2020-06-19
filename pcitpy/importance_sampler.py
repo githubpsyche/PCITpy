@@ -1,3 +1,4 @@
+# %% [markdown]
 # # importance_sampler
 # Recovers a curve that best explains the relationship between the predictor and dependent variables
 #
@@ -11,7 +12,7 @@
 # **OUTPUTS**:
 # - Saves a .mat file in current_path/analysis_id/analysis_id_importance_sampler.mat
 
-# +
+# %%
 # helper functions from pcitpy
 from preprocessing_setup import preprocessing_setup
 from family_of_curves import family_of_curves
@@ -184,10 +185,10 @@ def importance_sampler(raw_data, analysis_settings):
     print('Finish time {}/{} {}:{}'.format(time.month, time.day, time.hour, time.minute))
 
 
-# -
-
+# %% [markdown]
 # ## Testing
 
+# %%
 def test_importance_sampler():
     # numpy
     import numpy as np 
@@ -211,11 +212,13 @@ def test_importance_sampler():
     eng.importance_sampler(matlab_data, matlab_analysis_settings, nargout=0)
 
 
+# %%
 # run tests only when is main file!
 if __name__ == '__main__':
     test_importance_sampler()
 
 
+# %% [markdown]
 # # compute_weights
 # To compute (P_theta - Q_theta)
 #
@@ -234,6 +237,7 @@ if __name__ == '__main__':
 # **OUTPUTS**:
 # - p_theta_minus_q_theta: Vector of length P (particles)
 
+# %%
 def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param, param, wgt_chunks, resolution):
     global which_param
     total_vol = common_to_all_curves(curve_name, 'curve_volumes', resolution) # Get the curve volumes (Lesbesgue measure)
@@ -274,6 +278,7 @@ def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param,
     return p_theta_minus_q_theta
 
 
+# %% [markdown]
 # # compute_weights
 # To compute (P_theta - Q_theta)
 #
@@ -291,6 +296,7 @@ def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param,
 # **OUTPUTS**:
 # - log_likelihood of that curve given all the P curves from the previous iteration
 
+# %%
 def compute_trunc_likes(x, mu):
     global tau, bounds, which_param
 

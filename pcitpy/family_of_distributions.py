@@ -1,3 +1,4 @@
+# %% [markdown]
 # # family_of_distributions
 # For each of the family of distributions this script performs specific computations like number of pdf/pmf, etc
 #
@@ -12,7 +13,7 @@
 # **OUTPUTS**:
 # - output: Holds the output of all computations
 
-# +
+# %%
 import numpy as np
 
 def family_of_distributions(distribution_name, get_info, *varargin):
@@ -24,7 +25,7 @@ def family_of_distributions(distribution_name, get_info, *varargin):
         raise ValueError('Invalid distribution!')
 
 
-# +
+# %%
 def bernoulli_distribution(get_info, input_params):
     if get_info == 'compute_densities': # --> (1), Compute the log densities. NOTE: We compute the log(probability function)
         if len(input_params) <= 1:
@@ -100,7 +101,7 @@ def fminunc_bernoulli_both(betas, w, net_effects, dependent_var):
     return f,g
 
 
-# +
+# %%
 def normal_distribution(get_info, input_params):
     if get_info == 'compute_densities':
         if len(input_params) <= 2:

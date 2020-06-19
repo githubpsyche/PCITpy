@@ -1,3 +1,4 @@
+# %% [markdown]
 # # family_of_curves
 # For each of the family of curves this script has curve specific computations like number of curve parameters, boundaries, log likelihood, etc
 #
@@ -12,7 +13,7 @@
 # **OUTPUTS**:
 # - output: Holds the output of all computations
 
-# +
+# %%
 import numpy as np
 from numpy import matlib
 

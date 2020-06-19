@@ -1,3 +1,4 @@
+# %% [markdown]
 # # likratiotest
 # Likelihood ratio test for nested models.
 #
@@ -14,7 +15,7 @@
 # - D - deviance score: -2*log(L1-L0)
 # - p - p-value from chi-squared test with degrees of freedom = K1-K0
 
-# +
+# %%
 from scipy import stats
 
 def likratiotest(L1, L0, K1, K0):
@@ -24,10 +25,10 @@ def likratiotest(L1, L0, K1, K0):
     return D, p
 
 
-# -
-
+# %% [markdown]
 # ## Testing
 
+# %%
 def test_likratiotest(L1=10.0, L0=20.0, K1=8.0, K0=5.0):
     
     # numpy
@@ -50,6 +51,7 @@ def test_likratiotest(L1=10.0, L0=20.0, K1=8.0, K0=5.0):
     print('All tests passed!')
 
 
+# %%
 # run tests only when is main file!
 if __name__ == '__main__':
     test_likratiotest()

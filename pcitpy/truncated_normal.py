@@ -1,3 +1,4 @@
+# %% [markdown]
 # # truncated_normal
 # generate N samples from a truncated normal distribution with mean=mu, sigma=sigma and with bounds A and B
 #
@@ -17,7 +18,7 @@
 # **EXAMPLE USAGE**:
 # - truncated_normal(-1, 1, 0.1, 0.001, 1000)
 
-# +
+# %%
 from scipy import special
 from numpy.random import rand
 from math import sqrt
@@ -37,10 +38,10 @@ def truncated_normal(a, b, mu, sigma, n):
     return mu + sigma * (sqrt(2) * special.erfinv(2 * (PHIl + (PHIr - PHIl) * rand(int(n), 1)) - 1))
 
 
-# -
-
+# %% [markdown]
 # ## Testing
 
+# %%
 def test_truncated_normal(A=-1.0, B=1.0, mu=0.1, sigma=0.001, N=10000.0):
     
     # numpy
@@ -74,8 +75,9 @@ def test_truncated_normal(A=-1.0, B=1.0, mu=0.1, sigma=0.001, N=10000.0):
     print('All tests passed!')
 
 
+# %%
 # run tests only when this is main file!
 if __name__ == '__main__':
     test_truncated_normal()
 
-
+# %%

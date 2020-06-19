@@ -1,3 +1,4 @@
+# %% [markdown]
 # # logsumexp
 # Return log(sum(exp(a), dim)) while avoiding numerical underflow (at least in the `MATLAB` implementation).
 #
@@ -5,11 +6,14 @@
 # - `logsumexp(a, 1)` will sum across columns and return a column vector.  
 # - Unlike matlab's `sum`, it will not switch the summing direction if you provide a row vector.
 
+# %%
 from scipy.special import logsumexp
 
 
+# %% [markdown]
 # ## Testing
 
+# %%
 def test_logsumexp(A=None, dim=None):
     # numpy
     import numpy as np 
@@ -37,6 +41,7 @@ def test_logsumexp(A=None, dim=None):
     print('All tests passed!')
 
 
+# %%
 # run tests only when is main file!
 if __name__ == '__main__':
     test_logsumexp()

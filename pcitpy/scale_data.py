@@ -1,3 +1,4 @@
+# %% [markdown]
 # # scale_data
 # Scale the elements of all the column vectors in Data within the range of [Lower Upper]; default range is [-1 1]
 #
@@ -15,7 +16,7 @@
 # **TRANSLATION NOTES**:
 # - It's unknown if those code works on or is ever used on `data` with # of dimensions > 1. I need to find a "real" example.
 
-# +
+# %%
 import numpy as np
 
 def scale_data(data, lower=-1.0, upper=1.0):
@@ -40,10 +41,10 @@ def scale_data(data, lower=-1.0, upper=1.0):
     return scaled
 
 
-# -
-
+# %% [markdown]
 # ## Testing
 
+# %%
 def test_scale_data(data=None, lower=0.0, upper=1.0):
     
     # numpy
@@ -70,6 +71,7 @@ def test_scale_data(data=None, lower=0.0, upper=1.0):
     print('All tests passed!')
 
 
+# %%
 # run tests only when this is main file!
 if __name__ == '__main__':
     test_scale_data()
