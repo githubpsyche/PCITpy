@@ -21,7 +21,7 @@ def round_to(number, digits=1):
 
 # %% [markdown]
 # ## Testing
-# Assumes kernel is active at the base of the project directory.
+# Assumes kernel is active at current script's location
 
 # %%
 def test_round_to(number=6.784577854, digits=4.0):
@@ -36,7 +36,7 @@ def test_round_to(number=6.784577854, digits=4.0):
     eng = matlab.engine.start_matlab()
 
     # paths to matlab helper and model functions
-    eng.addpath('original')
+    eng.addpath('../original')
 
     # generate output
     python_output = round_to(number, digits)
