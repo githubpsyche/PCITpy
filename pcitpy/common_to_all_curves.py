@@ -1,4 +1,4 @@
-# %% [markdown]
+# %% markdown
 # # common_to_all_curves
 # To peform sanity checks on the input data and the algorithm parameter struct. Massage the data (i.e. drop outliers, zscore data, etc)
 #
@@ -34,19 +34,19 @@ def common_to_all_curves(curve_type, get_info, *varargin):
     # Checks if input arguments are passed in
     if len(varargin) == 0:
         raise ValueError('No input arguments!')
-        
+
     if get_info == 'initial_sampling':
         if len(varargin) < 2:
             raise ValueError('Missing input parameters in {} computation!'.format(get_info))
-        
+
         nParticles = varargin[0]
         if nParticles <= 0:
             raise ValueError('Number of particles will need to > 0!')
-        
+
         resolution = varargin[1]
         if resolution <= 0:
             raise ValueError('Resolution will need to > 0!')
-        
+
         bounds = family_of_curves(curve_type, 'get_bounds')
         nParams = family_of_curves(curve_type, 'get_nParams')
         out = np.full((nParticles, nParams), np.nan)
@@ -56,17 +56,17 @@ def common_to_all_curves(curve_type, get_info, *varargin):
             out[:, i] = np.random.uniform(low=bounds[i, 0], high=bounds[i, 1], size=(nParticles))
 
         out = round_to(out, resolution)
-        
+
         if np.any(np.isnan(out)):
             raise ValueError('NaNs in initial sampling output matrix!')
-        
+
     elif get_info == 'check_if_exceed_bounds':
         if len(varargin) < 1:
             raise ValueError('Missing input parameters in {} computation!'.format(get_info))
-            
+
         out = varargin[0]
         nParams = family_of_curves(curve_type, 'get_nParams')
-        if (not out) or (np.shape(out)[1] != nParams):
+        if (out.size == 0) or (np.shape(out)[1] != nParams):
             raise ValueError('Not a valid input matrix!')
 
         bounds = family_of_curves(curve_type, 'get_bounds')
@@ -75,9 +75,9 @@ def common_to_all_curves(curve_type, get_info, *varargin):
         # If a curve parameter is found to exceeding bounds then it is set to the bounds
         # For instance if a vertical parameter is -1.02 then it is set to -1 since -1 is the lower bound for vertical parameters
         for i in range(nParams):
-            out[:, i] = max(out[:, i], bounds[i, 0])
-            out[:, i] = min(out[:, i], bounds[i, 1])
-    
+            out[:, i] = np.maximum(out[:, i], bounds[i, 0])
+            out[:, i] = np.maximum(out[:, i], bounds[i, 1])
+
     elif get_info == 'curve_volumes':
         if len(varargin) < 1:
             raise ValueError('Missing input parameters in {} computation!'.format(get_info))
@@ -94,16 +94,16 @@ def common_to_all_curves(curve_type, get_info, *varargin):
         for i in range(nParams):
             total_vol = total_vol * len(np.arange(bounds[i, 0], bounds[i, 1], 1/np.power(10, resolution)))
         out = total_vol
-        
+
     elif get_info == 'flip_vertical_params':
         if len(varargin) < 1:
             raise ValueError('Missing input parameters in {} computation!'.format(get_info))
-            
+
         input_params = varargin[0]
         nParams = family_of_curves(curve_type, 'get_nParams')
         if (not input_params) or (np.shape(input_params)[1] != nParams):
             raise ValueError('Not a valid input matrix!')
-            
+
         out = input_params
         vertical_params = family_of_curves(curve_type, 'get_vertical_params_only')
 
@@ -114,12 +114,12 @@ def common_to_all_curves(curve_type, get_info, *varargin):
     elif get_info == 'sort_horizontal_params':
         if len(varargin) < 1:
             raise ValueError('Missing input parameters in {} computation!'.format(get_info))
-            
+
         input_params = varargin[0]
         nParams = family_of_curves(curve_type, 'get_nParams')
         if (input_params.size == 0) or (np.shape(input_params)[1] != nParams):
             raise ValueError('Not a valid input matrix!')
-            
+
         out = input_params
         horizontal_params = family_of_curves(curve_type, 'get_horizontal_params_only')
         if len(horizontal_params) != 2:
@@ -140,18 +140,18 @@ def common_to_all_curves(curve_type, get_info, *varargin):
         resolution = varargin[1]
         if resolution <= 0:
             raise ValueError('Resolution will need to > 0!')
-                
+
         # This draws a BCM curve for you. If you passed in the 'input_params' as 'con' then it randomly draws a theory consistent curve; 'inc' - theory inconsistent curve
         if (input_params == 'con') or (input_params == 'inc'):
             input_params = common_to_all_curves(curve_type, 'auto_generate', input_params, resolution)
-            
+
         nParams = family_of_curves(curve_type, 'get_nParams')
         if (not input_params) or (np.shape(input_params)[1] != nParams):
             raise ValueError('Not a valid input matrix!')
 
         # If instead you passed in [y1, x1, x2, y2, y3 and y4] into 'input_params' then it draws a curve directly rather then randomly generating one for you
         out = family_of_curves(curve_type, 'get_curve_xy_vals', input_params)
-        
+
         fig, ax = plt.subplots()
         ax.plot(out['xval'], out['yval'])
 
@@ -159,21 +159,21 @@ def common_to_all_curves(curve_type, get_info, *varargin):
                title=out['title_string'])
         ax.set_ylim(-1.2, 1.2)
         ax.grid()
-    
+
     elif get_info == 'auto_generate':
         if len(varargin) < 2:
             raise ValueError('Missing input parameters in {} computation!'.format(get_info))
-            
+
         input_params = varargin[0]
         resolution = varargin[1]
         if resolution <= 0:
             raise ValueError('Resolution will need to > 0!')
-            
+
         nSamples = 100
         nParam = family_of_curves(curve_type, 'get_nParams')
         params = np.full((nSamples, nParam), np.nan)
         out = np.full((nParam), np.nan)
-        
+
         # Generate 100 curves and randomly pick a theory consistent or inconsistent curve depending on the request
         params = common_to_all_curves(curve_type, 'initial_sampling', nSamples, resolution)
         if curve_type == 'horz_indpnt': # Enforce the right ordering for the horizontal curve parameters i.e. x1 < x2
@@ -200,17 +200,17 @@ def common_to_all_curves(curve_type, get_info, *varargin):
 
         if np.any(np.isnan(out)):
             raise ValueError('NaNs in curve parameters!')
-        
+
     elif get_info == 'weighted_curve':
         raise ValueError('Feature not added yet!')
-    
+
     else:
         raise ValueError('Invalid operation!')
-    
+
     return out
 
 
-# %% [markdown]
+# %% markdown
 # ## Testing
 # - common_to_all_curves('horz_indpnt', 'initial_sampling', 1000, 4)
 # - common_to_all_curves('horz_indpnt', 'check_if_exceed_bounds', some_matrix)
@@ -222,27 +222,30 @@ def common_to_all_curves(curve_type, get_info, *varargin):
 
 # %%
 def test_common_to_all_curves():
-    
+
+    ############################################################################
+    ## setup
+
     # numpy
-    import numpy as np 
-    
+    import numpy as np
+
     # package enabling access/control of matlab from python
     import matlab.engine
-    
+
     # matlab instance with relevant paths
     eng = matlab.engine.start_matlab()
-    
+
     # paths to matlab helper and model functions
     eng.addpath('../original')
-    
-    ##############################################################################
+
+    ############################################################################
     ## test initial sampling via matplotlib
     python_output = common_to_all_curves('horz_indpnt', 'initial_sampling', 1000, 4)
     matlab_output = np.asarray(eng.common_to_all_curves('horz_indpnt', 'initial_sampling', 1000.0, 4.0))
-    
+
     # result is stochastic, so we only test for the same shape
     assert np.shape(python_output) == np.shape(matlab_output)
-    
+
     # and visualize histograms of output
     import matplotlib.pyplot as plt
     fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
@@ -251,18 +254,30 @@ def test_common_to_all_curves():
     # We can set the number of bins with the `bins` kwarg
     axs[0].hist(python_output)#, bins=n_bins)
     axs[1].hist(matlab_output)#, bins=n_bins)
-    
-    #############################################################################
-    # next curve_volumnes
+
+    ############################################################################
+    ## check_if_exceed_bounds
+
+    # use initial_sampling to generate suitable param file
+    param = common_to_all_curves('horz_indpnt', 'initial_sampling', 1000, 4)
+
+    # generate output
+    python_output = common_to_all_curves('horz_indpnt', 'check_if_exceed_bounds', param) # Check whether curve parameters lie within the upper and lower bounds
+    matlab_output = np.asarray(eng.common_to_all_curves('horz_indpnt', 'check_if_exceed_bounds', matlab.double(param.tolist())))
+
+    assert np.all(python_output == matlab_output)
+
+    ############################################################################
+    # next curve_volumes
     python_output = common_to_all_curves('horz_indpnt', 'curve_volumes', 5)
     matlab_output = eng.common_to_all_curves('horz_indpnt', 'curve_volumes',5.0)
-    
+
     #############################################################################
     # auto_generate
     python_output = common_to_all_curves('horz_indpnt', 'auto_generate', 'con', 4.0)
     matlab_output = eng.common_to_all_curves('horz_indpnt', 'auto_generate', 'con', 4.0)
     print(python_output, matlab_output)
-    
+
     print('All tests passed!')
 
 

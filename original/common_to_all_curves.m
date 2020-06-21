@@ -63,7 +63,7 @@ switch get_info
 		bounds = family_of_curves(curve_type, 'get_bounds');
 		nParams = family_of_curves(curve_type, 'get_nParams');
 		out = NaN(nParticles, nParams);
-	
+
 		% Uniform sampling each curve parameter bounded by its respective bounds
 		for i = 1:nParams
 			out(:, i) = unifrnd(bounds(i, 1), bounds(i, 2), nParticles, 1);
@@ -272,6 +272,3 @@ switch get_info
 	otherwise
 		error('Invalid operation!');
 end
-
-
-

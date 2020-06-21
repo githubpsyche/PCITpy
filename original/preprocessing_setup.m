@@ -20,7 +20,7 @@ function[data, analysis_settings] = preprocessing_setup(data, analysis_settings)
 %
 % preprocessing_setup(data_matrix, analysis_settings_struct)
 %
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This is part of the P-CIT toolbox released under the BSD license.
 % Copyright (c) 2012, Princeton University
 % All rights reserved.
@@ -32,11 +32,11 @@ function[data, analysis_settings] = preprocessing_setup(data, analysis_settings)
 % Neither the name of the Princeton University nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 % THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT %NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 %
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
 % Sanity checks
-% %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
 
 disp(sprintf('********** START OF MESSAGES **********'));
 
@@ -296,7 +296,7 @@ if analysis_settings.zscore_within_subjects
 	% NaN's trials
 	nan_data = data(~nan_free_idx, :);
 	% Combine the NaN data with the outlier free data
-	data = [nan_free_data; nan_data]
+	data = [nan_free_data; nan_data];
 end
 
 % Checks if the resolution is specified, if not specified then it is set to default of 4. This translates to 1e-4 = 0.0001
@@ -311,11 +311,11 @@ if strcmp(analysis_settings.distribution, 'normal')
 end
 
 % We scale the predictor var to be between 0 and 1 and round it to 4 digits
-nan_free_idx = ~isnan(data(:, predictor_var_column))
-nan_free_data = data(nan_free_idx, :)
-nan_free_data(:, predictor_var_column) = round_to(scale_data(nan_free_data(:, predictor_var_column), 0, 1), analysis_settings.resolution)
-nan_data = data(~nan_free_idx, :)
-data = [nan_free_data; nan_data]
+nan_free_idx = ~isnan(data(:, predictor_var_column));
+nan_free_data = data(nan_free_idx, :);
+nan_free_data(:, predictor_var_column) = round_to(scale_data(nan_free_data(:, predictor_var_column), 0, 1), analysis_settings.resolution);
+nan_data = data(~nan_free_idx, :);
+data = [nan_free_data; nan_data];
 
 % Scrambling the data matrix
 if analysis_settings.scramble & ~analysis_settings.bootstrap
@@ -416,7 +416,7 @@ if ~exist(analysis_settings.target_dir), mkdir(analysis_settings.target_dir); en
 % Due to memory constraints we perform two chunking tricks
 
 % Chunking trick I
-% In the curve fitting algorithm we need to compute the p(current iteration curves | previous iteration curves). This matrix is huge when the number of particles (curves) is 
+% In the curve fitting algorithm we need to compute the p(current iteration curves | previous iteration curves). This matrix is huge when the number of particles (curves) is
 % large, say 100,000. Even with a 8 Gb RAM, dedicated to Matlab, we still get a out of memory errors. To avoid this problem we chunk the matrix into smaller, more manageable matrices.
 % Setting the chunk size to be particles x 0.05 -> 100,000 x 0.05 = 5000, translstes to p(current iteration curves(5000 curves at a time) | previous iteration curves).
 analysis_settings.wgt_chunks = analysis_settings.particles * 0.05;
@@ -431,7 +431,7 @@ if ~isfield(analysis_settings, 'particle_chunks')
 	disp(sprintf('Missing particle chunks! It is set to a default of %d', analysis_settings.particle_chunks));
 end
 % Depending on the number of particle chunks we get start, end points and the number of particles within each chunk. For instance 1000 particles divided into 4 chunks will look like,
-% 1		250	250
+% 1	250	250
 % 251	500	250
 % 501	750	250
 % 751	1000	250
@@ -507,4 +507,3 @@ scrambled_vector = NaN(size(sorted_neteff_clusters_indices));
 scrambled_vector(sorted_neteff_clusters_indices) = scrambled_dependent_variables(cumsum(indicator_vector));
 
 if any(isnan(scrambled_vector(:))), error('Nan''s in scrambled dependent variable vector!'); end
-

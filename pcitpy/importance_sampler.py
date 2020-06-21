@@ -203,9 +203,9 @@ def test_importance_sampler():
     eng.addpath('../original')
     
     # generate input data and settings
-    from run_importance_sampler import modified_run_importance_sampler
-    python_data, python_analysis_settings = modified_run_importance_sampler()
-    matlab_data, matlab_analysis_settings = eng.modified_run_importance_sampler(nargout=2)
+    from run_importance_sampler import eval_run_importance_sampler
+    python_data, python_analysis_settings = eval_run_importance_sampler()
+    matlab_data, matlab_analysis_settings = eng.eval_run_importance_sampler(nargout=2)
     
     # generate output
     importance_sampler(python_data, python_analysis_settings)

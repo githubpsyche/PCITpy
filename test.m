@@ -1,4 +1,5 @@
-function[scrambled_vector] = scramble_dependent_variable(target_dependent_variables, target_net_effect_clusters)
+target_dependent_variables = [1, 0, 1, 0, 0, 0, 1];
+target_net_effect_clusters = [3, 5, 3, 7, 7, 5, 8];
 
 % [SCRAMBLED_VECTOR] = SCRAMBLE_DEPENDENT_VARIABLE(TARGET_DEPENDENT_VARIABLES, TARGET_NET_EFFECT_CLUSTERS)
 %
@@ -56,4 +57,3 @@ scrambled_vector = NaN(size(sorted_neteff_clusters_indices));
 scrambled_vector(sorted_neteff_clusters_indices) = scrambled_dependent_variables(cumsum(indicator_vector));
 
 if any(isnan(scrambled_vector(:))), error('Nan''s in scrambled dependent variable vector!'); end
-
