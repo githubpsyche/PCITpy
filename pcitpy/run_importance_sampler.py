@@ -138,7 +138,7 @@ def eval_run_importance_sampler():
     # The lines below load the simulated data into the raw_data matrix.
     # Replace these lines of the code with code to load your actual data
 
-    results_dir = os.path.join('C:\\Users\\gunnj\\pcitpy', 'data')
+    results_dir = os.path.join('C:\\Users\\gunnj\\documents\\github\\pcitpy', 'data')
     data_path = os.path.join(results_dir, analysis_settings['analysis_id'],
                 analysis_settings['analysis_id'] + '.mat')
     data = loadmat(data_path)['data']

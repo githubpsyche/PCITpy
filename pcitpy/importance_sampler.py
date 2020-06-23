@@ -73,26 +73,26 @@ def importance_sampler(raw_data, analysis_settings):
             # Sample curve parameters from previous iteration's curve parameters based on normalized weights
             prev_iter_curve_param = param # storing the previous iteration's curve parameters since we need them to compute likelihood
             # Here we sample curves (with repetitions) based on the weights
-            param = prev_iter_curve_param[random.choices(np.arange(ana_opt['particles']), k=ana_opt['particles'], weights=normalized_w[em-1, :]),:]
+            param = prev_iter_curve_param[random.choices(np.arange(ana_opt['particles']), k=ana_opt['particles'], weights=normalized_w[em, :]),:]
             # Add Gaussian noise since some curves are going to be identical due to the repetitions
             # NOISE: Sample from truncated normal distribution using individual curve parameter bounds, mean = sampled curve parameters and sigma = tau
             for npm in range(nParam):
-                param[:, npm] = truncated_normal(bounds[npm, 1], bounds[npm, 2], param[:, npm], tau, ana_opt['particles'])
+                param[:, npm] = truncated_normal(bounds[npm, 0], bounds[npm, 1], param[:, npm], tau, ana_opt['particles'])
         param = common_to_all_curves(ana_opt['curve_type'], 'check_if_exceed_bounds', param) # Check whether curve parameters lie within the upper and lower bounds
-        if ana_opt['curve_type'] is 'horz_indpnt':
+        if ana_opt['curve_type'] == 'horz_indpnt':
             param = common_to_all_curves(ana_opt['curve_type'], 'sort_horizontal_params', param) # Check if the horizontal curve parameters are following the right trend i.e. x1 < x2
 
         # Compute the likelihood over all subjects (i.e. log probability mass function if logistic regression)
         #  This is where we use the chunking trick II
         for ptl_idx in range(np.shape(ana_opt['ptl_chunk_idx'])[0]):
-            output_struct = family_of_curves(ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'], ana_opt['ptl_chunk_idx']['ptl_idx, 3'],
-                                             param[ana_opt['ptl_chunk_idx'][ptl_idx, 1]:ana_opt['ptl_chunk_idx'][ptl_idx, 2], :], hold_betas, preprocessed_data,
+            output_struct = family_of_curves(ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'], ana_opt['ptl_chunk_idx'][ptl_idx, 2],
+                                             param[int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :], hold_betas, preprocessed_data,
                                              ana_opt['distribution'], ana_opt['dist_specific_params'], ana_opt['data_matrix_columns'])
 
-            w[ana_opt['ptl_chunk_idx'][ptl_idx, 1]:ana_opt['ptl_chunk_idx'][ptl_idx, 2]] = output_struct['w'] # Gather weights
+            w[ana_opt['ptl_chunk_idx'][ptl_idx, 0]:ana_opt['ptl_chunk_idx'][ptl_idx, 1]] = output_struct['w'] # Gather weights
 
-            net_effects[:, ana_opt['ptl_chunk_idx'][ptl_idx, 1]:ana_opt.ptl_chunk_idx[ptl_idx, 2]] = output_struct['net_effects'] # Gather predictor variable
-            if ptl_idx == 1:
+            net_effects[:, ana_opt['ptl_chunk_idx'][ptl_idx, 0]:ana_opt.ptl_chunk_idx[ptl_idx, 1]] = output_struct['net_effects'] # Gather predictor variable
+            if ptl_idx == 0:
                 dependent_var = output_struct['dependent_var'] # Gather dependent variable only once, since it is the same across all ptl_idx
 
         if np.any(np.isnan(w)):

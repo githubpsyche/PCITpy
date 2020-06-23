@@ -86,6 +86,6 @@ end
 % %%%%%%%%%%%%%%%%%%%%
 % The three lines below load the simulated data into the raw_data matrix. Replace these two lines of the code with code to load your actual data
 
-results_dir = fullfile('C:/Users/gunnj/pcitpy', 'data');
+results_dir = fullfile('C:/Users/gunnj/documents/github/pcitpy', 'data');
 load(sprintf('%s/%s/%s.mat', results_dir, analysis_settings.analysis_id, analysis_settings.analysis_id));
 raw_data = data;

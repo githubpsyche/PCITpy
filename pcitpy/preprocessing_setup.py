@@ -120,7 +120,7 @@ def preprocessing_setup(data, analysis_settings):
         print('Missing initial setting for beta_1! It is set to a default of {}'.format(analysis_settings['bootstrap']))
 
     # Checks if bootstrap flag is boolean
-    if not (type(analysis_settings['bootstrap']) is bool):
+    if not (type(analysis_settings['bootstrap']) == bool):
         raise ValueError('analysis_settings.bootstrap field will need to be boolean!')
 
     # Checks if this is a scramble run; if not specified then it is set to a default of false
@@ -128,7 +128,7 @@ def preprocessing_setup(data, analysis_settings):
         analysis_settings['scramble'] = False
 
     # Checks if scramble flag is boolean
-    if not (type(analysis_settings['scramble']) is bool):
+    if not (type(analysis_settings['scramble']) == bool):
         raise ValueError('analysis_settings.scramble field will need to be boolean!')
 
     # Errors if both bootstrap and scramble flags exist
@@ -237,7 +237,7 @@ def preprocessing_setup(data, analysis_settings):
         print('Missing zscore_within_subjects information! We are NOT zscoring within subjects')
 
     # Verifies if zscore within subjects is boolean
-    if not (type(analysis_settings['zscore_within_subjects']) is bool):
+    if not (type(analysis_settings['zscore_within_subjects']) == bool):
         raise ValueError('zscore_within_subjects field will need to be boolean!')
 
     # Zscore the predictor variable within each subject
