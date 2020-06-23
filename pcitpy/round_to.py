@@ -1,4 +1,4 @@
-# %% [markdown]
+# %% markdown
 # # round_to
 # Round the number to the no. of digits
 #
@@ -19,9 +19,9 @@ def round_to(number, digits=1):
     digits = np.power(10, digits)
     return np.round(number * digits) / digits
 
-# %% [markdown]
+# %% markdown
 # ## Testing
-# Assumes kernel is active at current script's location
+# We apply each version of `round_to` to the example number specified in the original code and compare outputs.
 
 # %%
 def test_round_to(number=6.784577854, digits=4.0):

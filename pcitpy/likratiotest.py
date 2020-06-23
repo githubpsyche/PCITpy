@@ -1,4 +1,4 @@
-# %% [markdown]
+# %% markdown
 # # likratiotest
 # Likelihood ratio test for nested models.
 #
@@ -25,31 +25,31 @@ def likratiotest(L1, L0, K1, K0):
     return D, p
 
 
-# %% [markdown]
+# %% markdown
 # ## Testing
+# In this test, arbitrary parameters are selected and output under each version is compared.
 
 # %%
 def test_likratiotest(L1=10.0, L0=20.0, K1=8.0, K0=5.0):
-    
+
     # numpy
-    import numpy as np 
-    
+    import numpy as np
+
     # package enabling access/control of matlab from python
     import matlab.engine
-    
+
     # matlab instance with relevant paths
     eng = matlab.engine.start_matlab()
-    
+
     # paths to matlab helper and model functions
     eng.addpath('../original')
-    
+
     # generate output
     python_output = likratiotest(L1, L0, K1, K0)
     matlab_output = np.asarray(eng.likratiotest(L1, L0, K1, K0, nargout=2))
     assert np.all(python_output == matlab_output)
-    
-    print('All tests passed!')
 
+    print('All tests passed!')
 
 # %%
 # run tests only when is main file!
