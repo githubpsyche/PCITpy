@@ -78,7 +78,7 @@ def horz_indpnt_curve(get_info, input_params):
         for i in range(len(net_effect_clusters)):
             cluster_idx = np.where(data[:,net_effect_clusters_column == net_effect_clusters[i]])
             X = np.zeros((len(cluster_idx), int(particles)))
-            for j in range(length(cluster_idx)):
+            for j in range(len(cluster_idx)):
                 if np.isnan(data[cluster_idx[j], predictor_var_column]):
                     x[i,:] = 0
                 else:
@@ -232,3 +232,39 @@ def horz_indpnt_curve(get_info, input_params):
         raise ValueError('Invalid operation!')
 
     return out
+
+# %% markdown
+# ## Testing
+# Most function options are simple enough to not require tests. `compute_likelihood`, `count_particles`, and `get_curve_xy_vals` are key exceptions.
+#
+# `compute_likelihood` depends on the most parameters - we pregenerate an example set of parameters within `data/test/test_compute_likelihood.mat`. We then load the example and use it as parameters for both versions of the `compute_likelihood` option.
+
+# %%
+
+def test_compute_likelihood():
+    # numpy
+    import numpy as np
+
+    # package enabling loading mat files
+    from scipy.io import loadmat
+
+    # load input (and matlab output)
+    data = loadmat('..\\data\\test\\test_compute_likelihoods.mat')
+    ana_opt = data['ana_opt'][0][0]
+    param = data['param']
+    preprocessed_data = data['preprocessed_data']
+    hold_betas = np.array([0, 1])
+    ptl_idx = 0
+    matlab_output = data['output_struct']
+
+    # generate output
+    python_output = family_of_curves(ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'], ana_opt['ptl_chunk_idx'][ptl_idx, 2],
+                                     param[int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :], hold_betas, preprocessed_data,
+                                     ana_opt['distribution'], ana_opt['dist_specific_params'], ana_opt['data_matrix_columns'])
+
+    return python_output
+
+# %%
+# run tests only when is main file!
+if __name__ == '__main__':
+    python_output = test_compute_likelihood()
