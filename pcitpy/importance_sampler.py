@@ -103,7 +103,7 @@ def importance_sampler(raw_data, analysis_settings):
             p_theta_minus_q_theta = compute_weights(ana_opt['curve_type'], ana_opt['particles'], normalized_w[em-1,:], prev_iter_curve_param, param, ana_opt['wgt_chunks'], ana_opt['resolution'])
             w += p_theta_minus_q_theta
 
-        w = np.exp(w - np.logsumexp(w, 2)) # Normalize the weights using logsumexp to avoid numerical underflow
+        w = np.exp(w - special.logsumexp(w, 2)) # Normalize the weights using logsumexp to avoid numerical underflow
         normalized_w[em, :] = w # Store the normalized weights
 
         # Optimize betas using fminunc
@@ -150,7 +150,7 @@ def importance_sampler(raw_data, analysis_settings):
     if np.any(np.isnan(w)):
         raise ValueError('NaNs in normalized weight vector w!')
 
-    w = np.exp(w - np.logsumexp(w, 2)) # Normalize the weights using logsumexp to avoid numerical underflow
+    w = np.exp(w - special.logsumexp(w, 2)) # Normalize the weights using logsumexp to avoid numerical underflow
     normalized_w[em+1, :] = w # Store the normalized weights
 
     # Added for debugging chi-sq, might remove eventually
