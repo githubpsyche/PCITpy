@@ -16,7 +16,6 @@
 # %%
 # helper functions from pcitpy
 from family_of_curves import family_of_curves
-from round_to import round_to
 from scale_data import scale_data
 
 # other dependencies
@@ -273,7 +272,7 @@ def preprocessing_setup(data, analysis_settings):
     # We scale the predictor var to be between 0 and 1 and round it to 4 digits
     nan_free_idx = np.logical_not(np.isnan(data[:, predictor_var_column]))
     nan_free_data = data[nan_free_idx, :]
-    nan_free_data[:, predictor_var_column] = round_to(scale_data(nan_free_data[:, predictor_var_column], 0, 1),
+    nan_free_data[:, predictor_var_column] = np.round(scale_data(nan_free_data[:, predictor_var_column], 0, 1),
                                                       analysis_settings['resolution'])
     nan_data = data[np.logical_not(nan_free_idx), :]
     data = np.concatenate(nan_free_data, nan_data) if np.shape(nan_data)[0] > 0 else nan_free_data

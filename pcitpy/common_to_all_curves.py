@@ -26,7 +26,6 @@
 # %%
 import numpy as np
 from family_of_curves import family_of_curves
-from round_to import round_to
 import matplotlib.pyplot as plt
 
 def common_to_all_curves(curve_type, get_info, *varargin):
@@ -55,7 +54,7 @@ def common_to_all_curves(curve_type, get_info, *varargin):
         for i in range(nParams):
             out[:, i] = np.random.uniform(low=bounds[i, 0], high=bounds[i, 1], size=(nParticles))
 
-        out = round_to(out, resolution)
+        out = np.round_(out, resolution)
 
         if np.any(np.isnan(out)):
             raise ValueError('NaNs in initial sampling output matrix!')
