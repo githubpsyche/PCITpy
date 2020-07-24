@@ -18,9 +18,10 @@
 # %%
 from scipy import stats
 
-def likratiotest(L1, L0, K1, K0):
-    D = -2*(L0-L1)            # deviance score
-    df = K1-K0                # degrees of freedom
+
+def likratiotest(l1, l0, k1, k0):
+    D = -2 * (l0 - l1)  # deviance score
+    df = k1 - k0  # degrees of freedom
     p = stats.chi2.sf(D, df)  # chi-square test
     return D, p
 
@@ -30,8 +31,7 @@ def likratiotest(L1, L0, K1, K0):
 # In this test, arbitrary parameters are selected and output under each version is compared.
 
 # %%
-def test_likratiotest(L1=10.0, L0=20.0, K1=8.0, K0=5.0):
-
+def test_likratiotest(l1=10.0, l0=20.0, k1=8.0, k0=5.0):
     # numpy
     import numpy as np
 
@@ -45,11 +45,12 @@ def test_likratiotest(L1=10.0, L0=20.0, K1=8.0, K0=5.0):
     eng.addpath('../original')
 
     # generate output
-    python_output = likratiotest(L1, L0, K1, K0)
-    matlab_output = np.asarray(eng.likratiotest(L1, L0, K1, K0, nargout=2))
+    python_output = likratiotest(l1, l0, k1, k0)
+    matlab_output = np.asarray(eng.likratiotest(l1, l0, k1, k0, nargout=2))
     assert np.all(python_output == matlab_output)
 
     print('All tests passed!')
+
 
 # %%
 # run tests only when is main file!

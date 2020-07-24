@@ -14,6 +14,8 @@
 
 # %%
 # helper functions from pcitpy
+import math
+
 from preprocessing_setup import preprocessing_setup
 from family_of_curves import family_of_curves
 from common_to_all_curves import common_to_all_curves
@@ -25,6 +27,11 @@ import random
 from scipy import optimize
 import scipy.io as sio
 from scipy import special
+
+from pcitpy.family_of_distributions import family_of_distributions
+from pcitpy.likratiotest import likratiotest
+from pcitpy.truncated_normal import truncated_normal
+
 
 def importance_sampler(raw_data, analysis_settings):
     time = datetime.datetime.now()
@@ -39,10 +46,11 @@ def importance_sampler(raw_data, analysis_settings):
     del analysis_settings
 
     # Housekeeping
-    importance_sampler = {} # Creating the output struct
-    hold_betas_per_iter = np.full((ana_opt['em_iterations']+1, 2), np.nan) # Matrix to hold the betas over em iterations
-    exp_max_fval = np.full((ana_opt['em_iterations'], 1), np.nan) # Matrix to hold the fvals over em iterations
-    normalized_w = np.full((ana_opt['em_iterations']+1, ana_opt['particles']), np.nan) # Vector to hold the normalized weights
+    importance_sampler = {}  # Creating the output struct
+    hold_betas_per_iter = np.full((ana_opt['em_iterations'] + 1, 2), np.nan)  # Matrix to hold betas over em iterations
+    exp_max_f_values = np.full((ana_opt['em_iterations'], 1), np.nan)  # Matrix to hold the f_values over em iterations
+    normalized_w = np.full((ana_opt['em_iterations'] + 1, ana_opt['particles']),
+                           np.nan)  # to hold the normalized weights
     global tau
     global bounds
     global w
@@ -50,72 +58,94 @@ def importance_sampler(raw_data, analysis_settings):
     global dependent_var
 
     # fetch parameters
-    tau = ana_opt['tau'] # Store the tau for convenience
-    bounds = family_of_curves(ana_opt['curve_type'], 'get_bounds') # Get the curve parameter absolute bounds
-    nParam = family_of_curves(ana_opt['curve_type'], 'get_nParams') # Get the number of curve parameters
-    hold_betas = [ana_opt['beta_0'], ana_opt['beta_1']] # Store the betas into a vector
+    tau = ana_opt['tau']  # Store the tau for convenience
+    bounds = family_of_curves(ana_opt['curve_type'], 'get_bounds')  # Get the curve parameter absolute bounds
+    nParam = family_of_curves(ana_opt['curve_type'], 'get_nParams')  # Get the number of curve parameters
+    hold_betas = [ana_opt['beta_0'], ana_opt['beta_1']]  # Store the betas into a vector
 
-    for em in range(ana_opt['em_iterations']): # for every em iteration
-        hold_betas_per_iter[em, :] = hold_betas # Store the logreg betas over em iterations
+    for em in range(ana_opt['em_iterations']):  # for every em iteration
+        hold_betas_per_iter[em, :] = hold_betas  # Store the logreg betas over em iterations
         print('Betas: {}, {}'.format(hold_betas[0], hold_betas[1]))
         print('EM Iteration: {}'.format(em))
 
         # Initialize the previous iteration curve parameters, weight vector, net_effects and dependent_var matrices
-        prev_iter_curve_param = np.full((ana_opt['particles'], family_of_curves(ana_opt['curve_type'], 'get_nParams')), np.nan) # Matrix to hold the previous iteration curve parameters
-        w = np.full((ana_opt['particles']), np.nan) # Vector to hold normalized weights
-        net_effects = np.full((len(ana_opt['net_effect_clusters']), ana_opt['particles']), np.nan) # Matrix to hold the predictor variables (taking net effects if relevant) over all particles
-        dependent_var = [] # This vector cannot be initialized in advance since we don't know the length of this vector (dropping outliers)
+        # Matrix to hold the previous iteration curve parameters
+        prev_iter_curve_param = np.full((ana_opt['particles'], family_of_curves(ana_opt['curve_type'], 'get_nParams')),
+                                        np.nan)
+        w = np.full((ana_opt['particles']), np.nan)  # Vector to hold normalized weights
+
+        # Matrix to hold the predictor variables (taking net effects if relevant) over all particles
+        net_effects = np.full((len(ana_opt['net_effect_clusters']), ana_opt['particles']), np.nan)
+        dependent_var = []  # cannot be initialized in advance since we don't know its length (dropping outliers)
 
         # Sampling curve parameters
-        if em == 0: # only for the first em iteration
-            param = common_to_all_curves(ana_opt['curve_type'], 'initial_sampling', ana_opt['particles'], ana_opt['resolution']) # Good old uniform sampling
-        else: # for em iterations 2, 3, etc
+        if em == 0:  # only for the first em iteration
+            param = common_to_all_curves(ana_opt['curve_type'], 'initial_sampling',
+                                         ana_opt['particles'], ana_opt['resolution'])  # Good old uniform sampling
+        else:  # for em iterations 2, 3, etc
             # Sample curve parameters from previous iteration's curve parameters based on normalized weights
-            prev_iter_curve_param = param # storing the previous iteration's curve parameters since we need them to compute likelihood
-            # Here we sample curves (with repetitions) based on the weights
-            param = prev_iter_curve_param[random.choices(np.arange(ana_opt['particles']), k=ana_opt['particles'], weights=normalized_w[em, :]),:]
-            # Add Gaussian noise since some curves are going to be identical due to the repetitions
-            # NOISE: Sample from truncated normal distribution using individual curve parameter bounds, mean = sampled curve parameters and sigma = tau
-            for npm in range(nParam):
-                param[:, npm] = truncated_normal(bounds[npm, 0], bounds[npm, 1], param[:, npm], tau, ana_opt['particles'])
-        param = common_to_all_curves(ana_opt['curve_type'], 'check_if_exceed_bounds', param) # Check whether curve parameters lie within the upper and lower bounds
-        if ana_opt['curve_type'] == 'horz_indpnt':
-            param = common_to_all_curves(ana_opt['curve_type'], 'sort_horizontal_params', param) # Check if the horizontal curve parameters are following the right trend i.e. x1 < x2
+            prev_iter_curve_param = param  # we need previous iteration's curve parameters to compute likelihood
 
-        # Compute the likelihood over all subjects (i.e. log probability mass function if logistic regression)
+            # Here we sample curves (with repetitions) based on the weights
+            param = prev_iter_curve_param[random.choices(np.arange(ana_opt['particles']),
+                                                         k=ana_opt['particles'], weights=normalized_w[em, :]), :]
+            # Add Gaussian noise since some curves are going to be identical due to the repetitions
+            # NOISE: Sample from truncated normal distribution using individual curve parameter bounds,
+            # mean = sampled curve parameters and sigma = tau
+            for npm in range(nParam):
+                param[:, npm] = truncated_normal(bounds[npm, 0], bounds[npm, 1],
+                                                 param[:, npm], tau, ana_opt['particles'])
+
+        # Check whether curve parameters lie within the upper and lower bounds
+        param = common_to_all_curves(ana_opt['curve_type'], 'check_if_exceed_bounds', param)
+        if ana_opt['curve_type'] == 'horz_indpnt':
+            # Check if the horizontal curve parameters are following the right trend i.e. x1 < x2
+            param = common_to_all_curves(ana_opt['curve_type'], 'sort_horizontal_params', param)
+
+            # Compute the likelihood over all subjects (i.e. log probability mass function if logistic regression)
         #  This is where we use the chunking trick II
         for ptl_idx in range(np.shape(ana_opt['ptl_chunk_idx'])[0]):
-            output_struct = family_of_curves(ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'], ana_opt['ptl_chunk_idx'][ptl_idx, 2],
-                                             param[int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :], hold_betas, preprocessed_data,
-                                             ana_opt['distribution'], ana_opt['dist_specific_params'], ana_opt['data_matrix_columns'])
+            output_struct = family_of_curves(
+                ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'],
+                ana_opt['ptl_chunk_idx'][ptl_idx, 2],
+                param[int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :],
+                hold_betas, preprocessed_data,
+                ana_opt['distribution'], ana_opt['dist_specific_params'], ana_opt['data_matrix_columns'])
 
-            w[ana_opt['ptl_chunk_idx'][ptl_idx, 0]:ana_opt['ptl_chunk_idx'][ptl_idx, 1]] = output_struct['w'] # Gather weights
+            # Gather weights
+            w[ana_opt['ptl_chunk_idx'][ptl_idx, 0]:ana_opt['ptl_chunk_idx'][ptl_idx, 1]] = output_struct['w']
 
-            net_effects[:, ana_opt['ptl_chunk_idx'][ptl_idx, 0]:ana_opt.ptl_chunk_idx[ptl_idx, 1]] = output_struct['net_effects'] # Gather predictor variable
+            # Gather predictor variable
+            net_effects[:, ana_opt['ptl_chunk_idx'][ptl_idx, 0]:ana_opt.ptl_chunk_idx[ptl_idx, 1]] = output_struct[
+                'net_effects']
             if ptl_idx == 0:
-                dependent_var = output_struct['dependent_var'] # Gather dependent variable only once, since it is the same across all ptl_idx
+                # Gather dependent variable only once, since it is the same across all ptl_idx
+                dependent_var = output_struct['dependent_var']
 
         if np.any(np.isnan(w)):
             raise ValueError('NaNs in normalized weight vector w!')
 
         # Compute the p(theta) and q(theta) weights
         if em > 0:
-            p_theta_minus_q_theta = compute_weights(ana_opt['curve_type'], ana_opt['particles'], normalized_w[em-1,:], prev_iter_curve_param, param, ana_opt['wgt_chunks'], ana_opt['resolution'])
+            p_theta_minus_q_theta = compute_weights(
+                ana_opt['curve_type'], ana_opt['particles'], normalized_w[em - 1, :],
+                prev_iter_curve_param, param, ana_opt['wgt_chunks'], ana_opt['resolution'])
             w += p_theta_minus_q_theta
 
-        w = np.exp(w - special.logsumexp(w, 2)) # Normalize the weights using logsumexp to avoid numerical underflow
-        normalized_w[em, :] = w # Store the normalized weights
+        w = np.exp(w - special.logsumexp(w, 2))  # Normalize the weights using logsumexp to avoid numerical underflow
+        normalized_w[em, :] = w  # Store the normalized weights
 
         # Optimize betas using fminunc
-        optimizing_function = family_of_distributions(ana_opt['distribution'], 'fminunc_both_betas', w, net_effects, dependent_var, ana_opt['dist_specific_params'])
+        optimizing_function = family_of_distributions(ana_opt['distribution'], 'fminunc_both_betas', w, net_effects,
+                                                      dependent_var, ana_opt['dist_specific_params'])
 
-        result = optimize.minimize(optimizing_function, hold_betas, options={'disp':True})
+        result = optimize.minimize(optimizing_function, hold_betas, options={'disp': True})
         hold_betas = result.x
-        fval = result.fun
+        f_value = result.fun
 
-        exp_max_fval[em, 1] = fval # gather the fval over em iterations
+        exp_max_f_values[em, 1] = f_value  # gather the f_values over em iterations
 
-    hold_betas_per_iter[em+1, :] = hold_betas # Store away the last em iteration betas
+    hold_betas_per_iter[em + 1, :] = hold_betas  # Store away the last em iteration betas
     print('>>>>>>>>> Final Betas: {}, {} <<<<<<<<<'.format(hold_betas[0], hold_betas[1]))
 
     # Flipping the vertical curve parameters if beta_1 is negative
@@ -127,22 +157,35 @@ def importance_sampler(raw_data, analysis_settings):
         param = common_to_all_curves(ana_opt['curve_type'], 'flip_vertical_params', param)
         importance_sampler['flip'] = True
 
-    w = np.full((ana_opt['particles']), np.nan) # Clearing the weight vector
-    w_null_hypothesis = np.full((ana_opt['particles']), np.nan) # Used for a likelihoods ratio test to see if our beta1 value is degenerate
-    null_hypothesis_beta = [hold_betas[0], 0] # The null hypothesis for the likelihoods ratio test states that our model y_hat = beta_0 + beta_1 * predictor variable is no different than the simpler model y_hat = beta_0 + beta_1 * predictor variable WHERE BETA_1 = ZERO i.e. our model is y_hat = beta_0
+    w = np.full((ana_opt['particles']), np.nan)  # Clearing the weight vector
 
-    for ptl_idx  in range(np.shape(ana_opt.ptl_chunk_idx)[0]):
-        output_struct = family_of_curves(ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'], ana_opt['ptl_chunk_idx'][ptl_idx, 3],
-                                         param[ana_opt['ptl_chunk_idx'][ptl_idx, 1]:ana_opt['ptl_chunk_idx'][ptl_idx, 2], :], hold_betas, preprocessed_data,
-                                         ana_opt['distribution'], ana_opt['dist_specific_params'], ana_opt['data_matrix_columns'])
+    # Used for a likelihoods ratio test to see if our beta1 value is degenerate
+    w_null_hypothesis = np.full((ana_opt['particles']), np.nan)
+
+    # The null hypothesis for the likelihoods ratio test states that our model y_hat = beta_0 + beta_1 * predictor
+    # variable is no different than the simpler model y_hat = beta_0 + beta_1 * predictor variable WHERE BETA_1 =
+    # ZERO i.e. our model is y_hat = beta_0
+    null_hypothesis_beta = [hold_betas[0], 0]
+
+    for ptl_idx in range(np.shape(ana_opt.ptl_chunk_idx)[0]):
+        output_struct = family_of_curves(
+            ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'],
+            ana_opt['ptl_chunk_idx'][ptl_idx, 3],
+            param[ana_opt['ptl_chunk_idx'][ptl_idx, 1]:ana_opt['ptl_chunk_idx'][ptl_idx, 2], :], hold_betas,
+            preprocessed_data,
+            ana_opt['distribution'], ana_opt['dist_specific_params'], ana_opt['data_matrix_columns'])
         w[ana_opt['ptl_chunk_idx'][ptl_idx, 1]:ana_opt['ptl_chunk_idx'][ptl_idx, 2]] = output_struct['w']
 
-
-    # this code computes the log likelihood of the data under the null hypothesis i.e. using null_hypothesis_beta instead of hold_betas -- it's "lazy" because, unlike the alternative hypothesis, we don't have to compute the data likelihood for each particle because it's exactly the same for each particle (b/c compute_likelihood uses z = beta_1 * x + beta_0, but (recall that our particles control the value of x in this equation) beta_1 is zero for the null hypothesis) that's why we pass in the zero vector representing a single particle with irrelevant weights so we don't have to do it for each particle unnecessarily
-    output_struct_null_hypothesis_lazy = family_of_curves(ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'],
-                                                          1, [0, 0, 0, 0, 0, 0], null_hypothesis_beta, preprocessed_data,
-                                                          ana_opt['distribution'], ana_opt['dist_specific_params'],
-                                                          ana_opt['data_matrix_columns'])
+    # this code computes the log likelihood of the data under the null hypothesis i.e. using null_hypothesis_beta
+    # instead of hold_betas -- it's "lazy" because, unlike the alternative hypothesis, we don't have to compute the
+    # data likelihood for each particle because it's exactly the same for each particle (b/c compute_likelihood uses
+    # z = beta_1 * x + beta_0, but (recall that our particles control the value of x in this equation) beta_1 is zero
+    # for the null hypothesis) that's why we pass in the zero vector representing a single particle with irrelevant
+    # weights so we don't have to do it for each particle unnecessarily
+    output_struct_null_hypothesis_lazy = family_of_curves(
+        ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'], 1, [0, 0, 0, 0, 0, 0],
+        null_hypothesis_beta, preprocessed_data, ana_opt['distribution'], ana_opt['dist_specific_params'],
+        ana_opt['data_matrix_columns'])
     data_likelihood_null_hypothesis = output_struct_null_hypothesis_lazy['w']
     data_likelihood_alternative_hypothesis = w
 
@@ -150,35 +193,42 @@ def importance_sampler(raw_data, analysis_settings):
     if np.any(np.isnan(w)):
         raise ValueError('NaNs in normalized weight vector w!')
 
-    w = np.exp(w - special.logsumexp(w, 2)) # Normalize the weights using logsumexp to avoid numerical underflow
-    normalized_w[em+1, :] = w # Store the normalized weights
+    w = np.exp(w - special.logsumexp(w, 2))  # Normalize the weights using logsumexp to avoid numerical underflow
+    normalized_w[em + 1, :] = w  # Store the normalized weights
 
     # Added for debugging chi-sq, might remove eventually
     importance_sampler['data_likelihood_alternative_hypothesis'] = data_likelihood_alternative_hypothesis
     importance_sampler['data_likelihood_null_hypothesis'] = data_likelihood_null_hypothesis
 
-    # we calculate the data_likelihood over ALL particles by multiplying the data_likelihood for each particle by that particle's importance weight
-    dummy_var, importance_sampler['likratiotest'] = likratiotest(w * np.transpose(data_likelihood_alternative_hypothesis), data_likelihood_null_hypothesis, 2, 1)
+    # we calculate the data_likelihood over ALL particles by multiplying the data_likelihood for each particle by
+    # that particle's importance weight
+    dummy_var, importance_sampler['likratiotest'] = likratiotest(
+        w * np.transpose(data_likelihood_alternative_hypothesis), data_likelihood_null_hypothesis, 2, 1)
 
     if np.any(np.isnan(normalized_w)):
         raise ValueError('NaNs in normalized weights vector!')
-    if np.any(np.isnan(exp_max_fval)):
+    if np.any(np.isnan(exp_max_f_values)):
         raise ValueError('NaNs in Expectation maximilzation fval matrix!')
     if np.any(np.isnan(hold_betas_per_iter)):
         raise ValueError('NaNs in hold betas matrix!')
 
     importance_sampler['normalized_weights'] = normalized_w
-    importance_sampler['exp_max_fval'] = exp_max_fval
+    importance_sampler['exp_max_fval'] = exp_max_f_values
     importance_sampler['hold_betas_per_iter'] = hold_betas_per_iter
     importance_sampler['curve_params'] = param
     importance_sampler['analysis_settings'] = ana_opt
 
     if ana_opt['bootstrap']:
-        sio.savemat('{}/{}_b{}_importance_sampler.mat'.format(ana_opt['target_dir'], ana_opt['analysis_id'], ana_opt['bootstrap_run']), {'importance_sampler':importance_sampler})
+        sio.savemat('{}/{}_b{}_importance_sampler.mat'.format(ana_opt['target_dir'], ana_opt['analysis_id'],
+                                                              ana_opt['bootstrap_run']),
+                    {'importance_sampler': importance_sampler})
     elif ana_opt['scramble']:
-        sio.savemat('{}/{}_s{}_importance_sampler.mat'.format(ana_opt['target_dir'], ana_opt['analysis_id'], ana_opt['scramble_run']), {'importance_sampler':importance_sampler})
+        sio.savemat('{}/{}_s{}_importance_sampler.mat'.format(ana_opt['target_dir'], ana_opt['analysis_id'],
+                                                              ana_opt['scramble_run']),
+                    {'importance_sampler': importance_sampler})
     else:
-        sio.savemat('{}/{}_importance_sampler.mat'.format(ana_opt['target_dir'], ana_opt['analysis_id']), {'importance_sampler':importance_sampler})
+        sio.savemat('{}/{}_importance_sampler.mat'.format(ana_opt['target_dir'], ana_opt['analysis_id']),
+                    {'importance_sampler': importance_sampler})
     print('Results are stored in be stored in {}'.format(ana_opt['target_dir']))
 
     time = datetime.datetime.now()
@@ -187,7 +237,7 @@ def importance_sampler(raw_data, analysis_settings):
 
 # %% markdown
 # ## `IMPORTANCE_SAMPLER` Testing
-# We use the contrived `eval_run_importance_sampler` to separately generate the relevant data from our development dataset.
+# We use `eval_run_importance_sampler` to separately generate the relevant data from our development dataset.
 
 # %%
 def test_importance_sampler():
@@ -212,12 +262,14 @@ def test_importance_sampler():
     importance_sampler(python_data, python_analysis_settings)
     eng.importance_sampler(matlab_data, matlab_analysis_settings, nargout=0)
 
+
 # %% markdown
 # # compute_weights
 # To compute (P_theta - Q_theta)
 #
 # **USAGE**:
-# [p_theta_minus_q_theta] = compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param, param, wgt_chunks, resolution)
+# [p_theta_minus_q_theta] = compute_weights(
+#       curve_name, nParticles, normalized_w, prev_iter_curve_param, param, wgt_chunks, resolution)
 #
 # **INPUTS**:
 # - curve_name: Name of the family of curves (explicitly passed in)
@@ -225,7 +277,7 @@ def test_importance_sampler():
 # - normalized_w: Previous iteration's normalized weights
 # - prev_iter_curve_param: Curve parameters held for the previous iteration
 # - param: Curve parameters held for the current iteration
-# - wgt_chunks: Size of chunk. Purely for limited RAM purposes we break up the giant matrix into smaller matrices to compute the weights (explicitly passed in)
+# - wgt_chunks: Size of chunk. To deal with limited RAM we break up matrix into smaller matrices
 # - resolution: Resolution to which the activations are rounded of
 #
 # **OUTPUTS**:
@@ -234,14 +286,16 @@ def test_importance_sampler():
 # %%
 def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param, param, wgt_chunks, resolution):
     global which_param
-    total_vol = common_to_all_curves(curve_name, 'curve_volumes', resolution) # Get the curve volumes (Lesbesgue measure)
-    nParam = family_of_curves(curve_name, 'get_nParams') # Get the number of curve parameters
+    total_vol = common_to_all_curves(curve_name, 'curve_volumes',
+                                     resolution)  # Get the curve volumes (Lesbesgue measure)
+    nParam = family_of_curves(curve_name, 'get_nParams')  # Get the number of curve parameters
 
     # Computing q(theta), i.e. what is the probability of a curve given all curves from the previous iteration
     # P(theta|old_theta)
     q_theta = np.zeros((nParticles, 1))
     reduced_nParticles = nParticles / wgt_chunks
-    reduced_nParticles_idx = np.concatenate(np.arange(0, reduced_nParticles, nParticles), np.arange(0, reduced_nParticles, nParticles)+reduced_nParticles-1)
+    reduced_nParticles_idx = np.concatenate(np.arange(0, reduced_nParticles, nParticles),
+                                            np.arange(0, reduced_nParticles, nParticles) + reduced_nParticles - 1)
 
     for idx in range(np.shape(reduced_nParticles_idx)[1]):
         prob_grp_lvl_curve = np.zeros((nParticles, reduced_nParticles))
@@ -250,7 +304,8 @@ def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param,
             which_param = npm
             nth_grp_lvl_param = np.repmat(param[:, npm], 1, reduced_nParticles)
             nth_prev_iter_curve_param = np.transpose(prev_iter_curve_param[target_indices, npm])
-            prob_grp_lvl_curve = np.add(prob_grp_lvl_curve, np.vectorize(compute_trunc_likes)(nth_grp_lvl_param, nth_prev_iter_curve_param))
+            prob_grp_lvl_curve = np.add(prob_grp_lvl_curve,
+                                        np.vectorize(compute_trunc_likes)(nth_grp_lvl_param, nth_prev_iter_curve_param))
 
         if np.any(np.isnan(prob_grp_lvl_curve)):
             raise ValueError('NaNs in probability of group level curves matrix!')
@@ -283,7 +338,8 @@ def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param,
 # - x: Kth curve parameter in the current iteration
 # - mu: All curve parameters from the previous iteration
 # - tau: Similar to sigma in Gaussian distribution (via global)
-# - bounds and which_param: Are used to fetch the respective curve parameter's absolute abounds (via global). This is required since we are computing likelihoods for truncated normal
+# - bounds and which_param: Are used to fetch the respective curve parameter's absolute abounds (via global).
+#       This is required since we are computing likelihoods for truncated normal
 #
 # NOTE: tau and bounds are NOT modified throughout this code once initially set
 #
@@ -297,12 +353,15 @@ def compute_trunc_likes(x, mu):
     if tau <= 0:
         raise ValueError('Tau is <= 0!')
 
-    # This ugly thing below is a manifestation of log(1 ./ (tau .* (normcdf((bounds(which_param, 2) - mu) ./ tau) - normcdf((bounds(which_param, 1) - mu) ./ tau))) .* normpdf((x - mu) ./ tau))
-    # Refer to http://en.wikipedia.org/wiki/Truncated_normal_distribution for the truncated normal distribution
-    log_likelihood =  -(np.log(tau) + np.log(np.multiply(0.5, special.erfc(-(
-        np.divide(bounds[which_param, 2]-mu,np.multiply(tau, math.sqrt(2)))))))) + (
-        np.multiply(-0.5, np.log(2)+np.log(np.pi)) - (np.multiply(0.5, np.power(np.divide(x-mu, tau), 2))))
+    # This ugly thing below is a manifestation of log(1 ./ (tau .* (normcdf((bounds(which_param, 2) - mu) ./ tau) -
+    # normcdf((bounds(which_param, 1) - mu) ./ tau))) .* normpdf((x - mu) ./ tau)) Refer to
+    # http://en.wikipedia.org/wiki/Truncated_normal_distribution for the truncated normal distribution
+    log_likelihood = -(np.log(tau) + np.log(np.multiply(0.5, special.erfc(-(
+        np.divide(bounds[which_param, 2] - mu, np.multiply(tau, math.sqrt(2)))))))) + (
+                             np.multiply(-0.5, np.log(2) + np.log(np.pi)) - (
+                                np.multiply(0.5, np.power(np.divide(x - mu, tau), 2))))
     return log_likelihood
+
 
 # %%
 # run tests only when is main file!

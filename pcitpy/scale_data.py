@@ -12,43 +12,39 @@
 #
 # **OUTPUTS**:
 # - scaled: scaled data e.g. [0, 0.1760, 0.0026, 1.0000]
-#
-# **TRANSLATION NOTES**:
-# - It's unknown if those code works on or is ever used on `data` with # of dimensions > 1. I need to find a "real" example.
-
 # %%
 import numpy as np
+
 
 def scale_data(data, lower=-1.0, upper=1.0):
     if lower > upper:
         raise ValueError('Wrong lower of upper values!')
 
-    maxv = np.amax(data, axis=0)
-    minv = np.amin(data, axis=0)
+    max_v = np.amax(data, axis=0)
+    min_v = np.amin(data, axis=0)
     shape = np.shape(data)
-    if len(shape) < 2:
-        R, C = 1, shape[0]
-    elif len(shape) > 2:
-        R, C = shape[0], np.prod(shape[1:])
-    else:
-        R, C = shape
 
-    scaled = ((data - np.ones((R, 1)) * minv) * (
-        np.ones((R, 1)) * (
-            (upper-lower) * (
-                np.ones((1, C)) / (maxv - minv))))) + lower
+    if len(shape) < 2:
+        r, c = 1, shape[0]
+    elif len(shape) > 2:
+        r, c = shape[0], np.prod(shape[1:])
+    else:
+        r, c = shape
+
+    scaled = ((data - np.ones((r, 1)) * min_v) * (
+            np.ones((r, 1)) * (
+            (upper - lower) * (
+            np.ones((1, c)) / (max_v - min_v))))) + lower
 
     return scaled
 
+
 # %% markdown
 # ## Testing
-# Compares result of applying `scale_data` to an example list `[8.3256, 1000.0, 23.0, 564.0]` between matlab and python versions.
+# Compares result of applying `scale_data` to an example list `[8.3256, 1000.0, 23.0, 564.0]` between codebase versions.
 
 # %%
 def test_scale_data(data=None, lower=0.0, upper=1.0):
-
-    # numpy
-    import numpy as np
 
     # package enabling access/control of matlab from python
     import matlab.engine

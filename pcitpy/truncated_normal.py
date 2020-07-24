@@ -23,27 +23,29 @@ from scipy import special
 from numpy.random import rand
 from math import sqrt
 
+
 def truncated_normal(a, b, mu, sigma, n):
-    if (b-a) < 0:
+    if (b - a) < 0:
         raise ValueError('Lower bound is greater then upper bound!')
     elif sigma <= 0:
         raise ValueError('Sigma is <= 0!')
 
-    PHIl = 0.5 * special.erfc(-(((a - mu) / sigma) / sqrt(2)))
-    PHIr = 0.5 * special.erfc(-(((b - mu) / sigma) / sqrt(2)))
+    phi_l = 0.5 * special.erfc(-(((a - mu) / sigma) / sqrt(2)))
+    phi_r = 0.5 * special.erfc(-(((b - mu) / sigma) / sqrt(2)))
 
-    # Refer to http://www.maths.uq.edu.au/~chancc/10Fstat3001/ass4sol.pdf for truncated normal dist sampling below -- If this source does not exist then refer to code in the link below,
-    # http://www.wiley.com/legacy/wileychi/koopbayesian/supp/normt_rnd.m
-    return mu + sigma * (sqrt(2) * special.erfinv(2 * (PHIl + (PHIr - PHIl) * rand(int(n), 1)) - 1))
+    # Refer to http://www.maths.uq.edu.au/~chancc/10Fstat3001/ass4sol.pdf for truncated normal dist sampling below --
+    # If this source does not exist then refer to code in the link below, 
+    # http://www.wiley.com/legacy/wileychi/koopbayesian/supp/normt_rnd.m 
+    return mu + sigma * (sqrt(2) * special.erfinv(2 * (phi_l + (phi_r - phi_l) * rand(int(n), 1)) - 1))
 
 
-# %% markdown
-# ## Testing
-# Tests are passed if histograms exhibit similar (normal) distributions with the specified mean and sigma and truncations.
+# %% markdown 
+# ## Testing 
+# Tests are passed if histograms exhibit similar (normal) distributions with the specified 
+# mean and sigma and truncations. 
 
 # %%
-def test_truncated_normal(A=-1.0, B=1.0, mu=0.1, sigma=0.001, N=10000.0):
-
+def test_truncated_normal(a=-1.0, b=1.0, mu=0.1, sigma=0.001, n=10000.0):
     # numpy
     import numpy as np
 
@@ -57,8 +59,8 @@ def test_truncated_normal(A=-1.0, B=1.0, mu=0.1, sigma=0.001, N=10000.0):
     eng.addpath('../original')
 
     # generate output
-    python_output = truncated_normal(A, B, mu, sigma, N)
-    matlab_output = np.asarray(eng.truncated_normal(A, B, mu, sigma, N))
+    python_output = truncated_normal(a, b, mu, sigma, n)
+    matlab_output = np.asarray(eng.truncated_normal(a, b, mu, sigma, n))
 
     # result is stochastic, so we only test for the same shape
     assert np.shape(python_output) == np.shape(matlab_output)

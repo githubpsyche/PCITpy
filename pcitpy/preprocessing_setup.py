@@ -1,6 +1,7 @@
 # %% markdown
 # # preprocessing_setup
-# To peform sanity checks on the input data and the algorithm parameter struct. Massage the data (i.e. drop outliers, zscore data, etc)
+# Sanity checks on the input data and the algorithm parameter struct. Massage the data (i.e. drop outliers,
+# zscore data, etc)
 #
 # **USAGE**:
 # - [PREPROCESSED_DATA, UPDATED_ANALYSIS_SETTINGS] = PREPROCESSING_SETUP(RAW_DATA, ANALYSIS_SETTINGS)
@@ -25,17 +26,17 @@ import datetime
 import random
 import os
 
+
 def preprocessing_setup(data, analysis_settings):
     print('********** START OF MESSAGES **********')
 
     # Checks if the data matrix has 6 columns
-    nCols = np.shape(data)[1]
-    if nCols != 6:
-        raise ValueError('Incorrect number of columns ({}) in the input matrix!'.format(nCols))
+    number_of_columns = np.shape(data)[1]
+    if number_of_columns != 6:
+        raise ValueError('Incorrect number of columns ({}) in the input matrix!'.format(number_of_columns))
 
     # Registering which column in the data matrix is carrying which piece of information
     if (not ('data_matrix_columns' in analysis_settings)) or (not analysis_settings['data_matrix_columns']):
-
         # Setting it to the default
         analysis_settings['data_matrix_columns'] = {}
         analysis_settings['data_matrix_columns']['subject_id'] = 0
@@ -62,7 +63,7 @@ def preprocessing_setup(data, analysis_settings):
         analysis_settings['particles'] = 100000
         print('Missing number of particles! It is set to a default of {}'.format(analysis_settings['particles']))
 
-    # Checks if the family of curves is specified; if not specified then it is set to a default of 'horz_indpnt' (Refer to family of curves)
+    # Checks if the family of curves is specified; if not then set to 'horz_indpnt' (Refer to family of curves)
     if (not ('curve_type' in analysis_settings)) or (not analysis_settings['curve_type']):
         analysis_settings['curve_type'] = 'horz_indpnt';
         print('Missing family of curves! It is set to a default of {}'.format(analysis_settings['curve_type']))
@@ -72,13 +73,14 @@ def preprocessing_setup(data, analysis_settings):
         raise ValueError('{} - Does not exist! Check family_of_curves.m script'.format(analysis_settings['curve_type']))
 
     # Checks if the distribution is specified;
-    # If not specified and if the dependent variable is binary then it is set to 'bernoulli'; otherwise it is set to to 'normal'
+    # If not specified and if the dependent variable is binary it's set to 'bernoulli'; otherwise set to to 'normal'
     if (not ('distribution' in analysis_settings)) or (not analysis_settings['distribution']):
         if len(np.unique(data[:, dependent_var_column])) == 2:
             analysis_settings['distribution'] = 'bernoulli'
         else:
             analysis_settings['distribution'] = 'normal'
-        print('Missing distribution! based on the dependent variable it is set to {}'.format(analysis_settings['distribution']))
+        print('Missing distribution! based on the dependent variable it is set to {}'.format(
+            analysis_settings['distribution']))
 
     # Checks if the distribution specific parameters exist
     if (not ('dist_specific_params' in analysis_settings)) or (not analysis_settings['dist_specific_params']):
@@ -91,30 +93,32 @@ def preprocessing_setup(data, analysis_settings):
 
             # For normal distribution the additional parameter is sigma. We pass in sigma here.
             analysis_settings['dist_specific_params'] = {}
-            analysis_settings['dist_specific_params']['sigma'] = 1 # Default is 1
-            print('Missing sigma for normal distribution! It is set to {}'.format(analysis_settings['dist_specific_params']['sigma']))
+            analysis_settings['dist_specific_params']['sigma'] = 1  # Default is 1
+            print('Missing sigma for normal distribution! It is set to {}'.format(
+                analysis_settings['dist_specific_params']['sigma']))
 
     # Checks if normal distribution specific parameter is valid i.e. sigma > 0
     if (analysis_settings['distribution'] == 'normal') and (analysis_settings['dist_specific_params']['sigma'] <= 0):
-        raise ValueError('Normal distribution sigma will need to > 0! sigma = {}'.format(analysis_settings['dist_specific_params']['sigma']))
+        raise ValueError('Normal distribution sigma will need to > 0! sigma = {}'.format(
+            analysis_settings['dist_specific_params']['sigma']))
 
     # Checks if beta_0 is specified; if not specified then it is set to a default of 0
-    if not('beta_0' in analysis_settings):
+    if not ('beta_0' in analysis_settings):
         analysis_settings['beta_0'] = 0
         print('Missing initial setting for beta_0! It is set to a default of {}'.format(analysis_settings['beta_0']))
 
     # Checks if beta_1 is specified; if not specified then it is set to a default of 1
-    if not('beta_1' in analysis_settings):
+    if not ('beta_1' in analysis_settings):
         analysis_settings['beta_1'] = 1
         print('Missing initial setting for beta_1! It is set to a default of {}'.format(analysis_settings['beta_1']))
 
     # Checks if tau is specified; if not specified then it is set to a default of 0.05
-    if not('tau' in analysis_settings):
+    if not ('tau' in analysis_settings):
         analysis_settings['tau'] = 0.05
         print('Missing initial setting for tau! It is set to a default of {}'.format(analysis_settings['tau']))
 
     # Checks if this is a bootstrap run; if not specified then it is set to a default of false
-    if not('bootstrap' in analysis_settings):
+    if not ('bootstrap' in analysis_settings):
         analysis_settings['bootstrap'] = False
         print('Missing initial setting for beta_1! It is set to a default of {}'.format(analysis_settings['bootstrap']))
 
@@ -123,7 +127,7 @@ def preprocessing_setup(data, analysis_settings):
         raise ValueError('analysis_settings.bootstrap field will need to be boolean!')
 
     # Checks if this is a scramble run; if not specified then it is set to a default of false
-    if not('scramble' in analysis_settings):
+    if not ('scramble' in analysis_settings):
         analysis_settings['scramble'] = False
 
     # Checks if scramble flag is boolean
@@ -132,24 +136,26 @@ def preprocessing_setup(data, analysis_settings):
 
     # Errors if both bootstrap and scramble flags exist
     if analysis_settings['scramble'] and analysis_settings['bootstrap']:
-        raise ValueError('Cannot run both scramble AND bootstrap analyses at the same time! Set any one flag to be false')
+        raise ValueError(
+            'Cannot run both scramble AND bootstrap analyses at the same time! Set any one flag to be false')
 
     # Builds a bootstrap data matrix from the original data matrix
-    if analysis_settings['bootstrap'] and not(analysis_settings['scramble']):
+    if analysis_settings['bootstrap'] and not (analysis_settings['scramble']):
 
         # We need a bootstrap sample number
         if (not ('bootstrap_run' in analysis_settings)) or (not analysis_settings['bootstrap_run']):
-            raise ValueError('Missing bootstrap sample number! set analysis_settings.bootstrap_run to a valid sample number')
+            raise ValueError(
+                'Missing bootstrap sample number! set analysis_settings.bootstrap_run to a valid sample number')
 
         bootstrap_data = []
         new_cluster_count = 1
         new_subject_count = 1
 
         # Get the number of subjects from the data matrix
-        nSubjects = len(np.unique(data[:, subject_id_column]))
+        number_of_subjects = len(np.unique(data[:, subject_id_column]))
 
         # Randomly sample with replacement the number of subjects thus generating our bootstrap sample
-        subj_num_with_replacement = random.choices(np.arange(nSubjects), k=nSubjects)
+        subj_num_with_replacement = random.choices(np.arange(number_of_subjects), k=number_of_subjects)
 
         # For each subject in our bootstrap sample gather all relevant information
         for i in range(len(subj_num_with_replacement)):
@@ -167,13 +173,15 @@ def preprocessing_setup(data, analysis_settings):
             # Recreate a new subject id
             # (by repeatedly sampling subjects we could be repeating the subject id's)
             # Gather all information into a bootstrap_data matrix
-            bootstrap_data.append(np.concatenate(np.repmat(new_subject_count, len(subj_idx), 1), data[subj_idx,trials_column:dependent_var_column], cluster_vector))
+            bootstrap_data.append(np.concatenate(np.repmat(new_subject_count, len(subj_idx), 1),
+                                                 data[subj_idx, trials_column:dependent_var_column], cluster_vector))
             new_subject_count += 1
 
         # Perform some sanity checks to ensure that the bootstrap_data matrix is similar to the actual data matrix
         if not np.all(np.shape(bootstrap_data) == np.shape(data)):
             raise ValueError('Size of bootstrap dataset NOT the same as original data!')
-        if not (len(np.unique(data[:, net_effect_clusters_column])) == len(np.unique(bootstrap_data[:, net_effect_clusters_column]))):
+        if not (len(np.unique(data[:, net_effect_clusters_column])) == len(
+                np.unique(bootstrap_data[:, net_effect_clusters_column]))):
             raise ValueError('The number of clusters are not the same in the original and bootstrap sample!')
         if not np.array_equal(data[:, subject_id_column], bootstrap_data[:, subject_id_column]):
             raise ValueError('The ordering of subjects are not the same in the original and bootstrap sample!')
@@ -182,39 +190,45 @@ def preprocessing_setup(data, analysis_settings):
         analysis_settings['bootstrap_run_subj_id'] = subj_num_with_replacement
         data = bootstrap_data
 
-    # Checks if this analysis will be need to performed for a specific category; if not specified then it is set to a default of [] i.e. NOT category specific
+    # Checks if analysis will be performed for a specific category; if not then set to [] i.e. NOT category specific
     if not ('category' in analysis_settings):
         analysis_settings.category = []
-        print('Missing category specific analyses information! We are going to ignore the category dimension i.e. all trials from all categories will be analysed')
+        print(
+            'Missing category specific analyses information! We are going to ignore the category dimension i.e. all '
+            'trials from all categories will be analysed')
 
-    # If this analysis is to be performed for a specific category then it filters out data from other irrelavant categories
+        # If this analysis is to be performed for a specific category then filters out data from other irrelevant categories
     if len(analysis_settings['category']) > 0:
         target_cat_idx = []
         data_cat = np.unique(data[:, category_column])
-        for c  in range(len(analysis_settings['category'])):
+        for c in range(len(analysis_settings['category'])):
             cat_exist = np.where(data_cat == analysis_settings['category'][c])[0]
             if cat_exist.size == 0:
-                raise ValueError('Category does not exist! You have set analysis_settings.category[{}]={}'.format(c, analysis_settings['category'][c]))
-            target_cat_idx = np.concatenate(target_cat_idx, np.where(data[:, category_column] == analysis_settings['category'][c])[0])
+                raise ValueError('Category does not exist! You have set analysis_settings.category[{}]={}'.format(
+                    c, analysis_settings['category'][c]))
+            target_cat_idx = np.concatenate(target_cat_idx,
+                                            np.where(data[:, category_column] == analysis_settings['category'][c])[0])
         data = data[target_cat_idx, :]
 
-    # Checks if outliers (i.e. data trials) will need to dropped; if not specified then it is set to a default of 'DO NOT DROP OUTLIERS'
+    # Checks if outliers (i.e. data trials) will need to dropped; if not specified then set to 'DO NOT DROP OUTLIERS'
     if not ('drop_outliers' in analysis_settings):
         analysis_settings['drop_outliers'] = 3
-        print('Missing drop_outliers specific information! We are dropping outliers that are {} standard deviations away from the group mean'.format(analysis_settings['drop_outliers']))
+        print(
+            'Missing drop_outliers specific information! We are dropping outliers that are {} standard deviations away from the group mean'.format(
+                analysis_settings['drop_outliers']))
 
-    # If this analysis requires the outliers to be dropped, then the code below drops the data trials within XXXX standard deviations from the GROUP MEAN
+    # If this analysis requires the outliers dropped, then drops the data trials within std devs from the GROUP MEAN
     if analysis_settings['drop_outliers'] > 0:
-
         # NaN's do not qualify as outliers so we filter them out and add them at the end of this step
         nan_free_idx = np.logical_not(np.isnan(data[:, predictor_var_column]))
 
         # NaN free data
         nan_free_data = data[nan_free_idx, :]
-        std_dev_predictor_var = np.std(nan_free_data[:, predictor_var_column], ddof=1) * analysis_settings['drop_outliers']
+        std_dev_predictor_var = np.std(nan_free_data[:, predictor_var_column], ddof=1) * analysis_settings[
+            'drop_outliers']
         mean_predictor_var = np.mean(nan_free_data[:, predictor_var_column])
         predictor_var_idx = (nan_free_data[:, predictor_var_column] > (mean_predictor_var - std_dev_predictor_var)) & (
-            nan_free_data[:, predictor_var_column] < (mean_predictor_var + std_dev_predictor_var))
+                nan_free_data[:, predictor_var_column] < (mean_predictor_var + std_dev_predictor_var))
         print('{} trials are dropped since they are regarded as outliers'.format(
             np.shape(nan_free_data)[subject_id_column] - np.sum(predictor_var_idx)))
         nan_free_data_outlier_dropped = nan_free_data[predictor_var_idx, :]
@@ -223,11 +237,12 @@ def preprocessing_setup(data, analysis_settings):
         nan_data = data[np.logical_not(nan_free_idx), :]
 
         # Combine the NaN data with the outlier free data
-        data = np.concatenate(nan_free_data_outlier_dropped, nan_data) if np.shape(nan_data)[0] > 0 else nan_free_data_outlier_dropped
+        data = np.concatenate(nan_free_data_outlier_dropped, nan_data) if np.shape(nan_data)[
+                                                                              0] > 0 else nan_free_data_outlier_dropped
 
     # Following the 'filter by category' and 'drop outliers', if applicable, we check if the data matrix is empty
-    nTrials = np.shape(data)[subject_id_column]
-    if nTrials <= 0:
+    number_of_trials = np.shape(data)[subject_id_column]
+    if number_of_trials <= 0:
         raise ValueError('No input data!')
 
     # Checks if we need to zscore predictor var within subjects, if not specified then it is set to default of FALSE
@@ -245,29 +260,30 @@ def preprocessing_setup(data, analysis_settings):
         nan_free_idx = np.logical_not(np.isnan(data[:, predictor_var_column]))
         # NaN free data
         nan_free_data = data[nan_free_idx, :]
-        # We get the list of subject id's (we use this cell array in zscoring the data within each subject, if applicable)
+        # Get the list of subject id's (we use this cell array in zscoring the data within each subject, if applicable)
         subject_id_list = np.unique(nan_free_data[:, subject_id_column])
         # We get the number of subjects
-        nSubjects = len(subject_id_list)
-        if nSubjects <= 0:
+        number_of_subjects = len(subject_id_list)
+        if number_of_subjects <= 0:
             raise ValueError('Not valid number of subjects!')
-        for s in range(nSubjects):
+        for s in range(number_of_subjects):
             subject_idx = np.where(nan_free_data[:, subject_id_column] == subject_id_list[s])[0]
-            nan_free_data[subject_idx, predictor_var_column] = stats.zscore(nan_free_data[subject_idx, predictor_var_column], ddof=1)
+            nan_free_data[subject_idx, predictor_var_column] = stats.zscore(
+                nan_free_data[subject_idx, predictor_var_column], ddof=1)
         print('Predictor variables within each subject are zscored!')
         # NaN's trials
         nan_data = data[np.logical_not(nan_free_idx), :]
         # Combine the NaN data with the outlier free data
         data = np.concatenate(nan_free_data, nan_data) if np.shape(nan_data)[0] > 0 else nan_free_data
 
-    # Checks if the resolution is specified, if not specified then it is set to default of 4. This translates to 1e-4 = 0.0001
+    # Checks if resolution is specified, if not specified then set to default of 4. This translates to 1e-4 = 0.0001
     if (not ('resolution' in analysis_settings)) or (analysis_settings['resolution'] <= 0):
         analysis_settings['resolution'] = 4
         print('Missing resolution! It is set to a default of %d'.format(analysis_settings['resolution']))
 
     # if we have normally distributed data, we want to z-score the dependent variable
     if analysis_settings['distribution'] == 'normal':
-        data[:,dependent_var_column] = stats.zscore(data[:, dependent_var_column], ddof=1)
+        data[:, dependent_var_column] = stats.zscore(data[:, dependent_var_column], ddof=1)
 
     # We scale the predictor var to be between 0 and 1 and round it to 4 digits
     nan_free_idx = np.logical_not(np.isnan(data[:, predictor_var_column]))
@@ -280,31 +296,35 @@ def preprocessing_setup(data, analysis_settings):
     # Scrambling the data matrix
     if analysis_settings['scramble']:
         if (not ('scramble_run' in analysis_settings)) or (not analysis_settings['scramble_run']):
-            raise ValueError('Missing scramble sample number! set analysis_settings.scramble_run to a valid sample number')
+            raise ValueError(
+                'Missing scramble sample number! set analysis_settings.scramble_run to a valid sample number')
         if (not ('scramble_style' in analysis_settings)) or (not analysis_settings['scramble_style']):
-            analysis_settings['scramble_style'] = 'within_subjects_within_categories' # The most conservative among all scramble techniques
+            analysis_settings[
+                'scramble_style'] = 'within_subjects_within_categories'  # most conservative of all scramble techniques
             print('Missing scramble style! It is set a default of {}'.format(analysis_settings['scramble_style']))
 
         # We get the list of subject id's
         subject_id_list = np.unique(data[:, subject_id_column])
         # We get the number of subjects in this analysis
-        nSubjects = len(subject_id_list)
-        if nSubjects <= 0:
+        number_of_subjects = len(subject_id_list)
+        if number_of_subjects <= 0:
             raise ValueError('Not valid number of subjects!')
 
         if analysis_settings['scramble_style'] == 'within_subjects_within_categories':
-            # Here we scramble all dependent variables WHILE respecting the net effect boundaries, subject groupings and category groupings
+            # Here scramble all DVs WHILE respecting the net effect boundaries, subject groupings and category groupings
             categories = np.unique(data[:, category_column])
-            for s in range(nSubjects):
+            for s in range(number_of_subjects):
                 for c in range(len(categories)):
-                    subject_category_idx = np.where((data[:, subject_id_column] == subject_id_list[s]) & (data[:, category_column] == categories[c]))[0]
+                    subject_category_idx = np.where((data[:, subject_id_column] == subject_id_list[s]) & (
+                            data[:, category_column] == categories[c]))[0]
                     if len(subject_category_idx) > 1:
                         data[subject_category_idx, dependent_var_column] = scramble_dependent_variable(
-                            data[subject_category_idx, dependent_var_column], data[subject_category_idx, net_effect_clusters_column])
+                            data[subject_category_idx, dependent_var_column],
+                            data[subject_category_idx, net_effect_clusters_column])
 
         elif analysis_settings['scramble_style'] == 'within_subjects_across_categories':
             # Here we scramble all dependent variables WHILE respecting the net effect boundaries and subject groupings
-            for s in range(nSubjects):
+            for s in range(number_of_subjects):
                 subject_idx = np.where(data[:, subject_id_column] == subject_id_list[s])[0]
                 if len(subject_idx) > 1:
                     data[subject_idx, dependent_var_column] = scramble_dependent_variable(
@@ -340,8 +360,8 @@ def preprocessing_setup(data, analysis_settings):
         for i in range(len(net_effect_clusters)):
             cluster_idx = np.where(data[:, net_effect_clusters_column] == net_effect_clusters[i])[0]
             if len(np.shape(np.unique(data[cluster_idx, [subject_id_column, dependent_var_column]], axis=0))) != 1:
-                raise ValueError('Subject Id and/or dependent variable not unique for net effect cluster {}! Check the data matrix'.format(
-                    net_effect_clusters[i]))
+                raise ValueError('Subject Id and/or dependent variable not unique for net effect cluster {}! Check '
+                                 'the data matrix'.format(net_effect_clusters[i]))
     else:
         # If net effect clusters DO NOT exist then we treat each row as a net effect cluster by itself
         print('Each row will be treated separately. We will NOT be computing the net effect of any rows')
@@ -349,7 +369,8 @@ def preprocessing_setup(data, analysis_settings):
     # We create an analysis id unique to this analysis
     if (not ('analysis_id' in analysis_settings)) or (not analysis_settings['analysis_id']):
         time = datetime.datetime.now()
-        analysis_settings['analysis_id'] = '{}-{}-{}-{}-{}'.format(time.month, time.day, time.hour, time.minute, time.second)
+        analysis_settings['analysis_id'] = '{}-{}-{}-{}-{}'.format(time.month, time.day, time.hour, time.minute,
+                                                                   time.second)
 
     # We create a results directory if no specific target directory is mentioned
     if (not ('target_dir' in analysis_settings)) or (not analysis_settings['target_dir']):
@@ -366,29 +387,33 @@ def preprocessing_setup(data, analysis_settings):
     # Due to memory constraints we perform two chunking tricks
 
     # Chunking trick I
-    # In the curve fitting algorithm we need to compute the p(current iteration curves | previous iteration curves). This matrix is huge when the number of particles (curves) is
-    # large, say 100,000. Even with a 8 Gb RAM, dedicated to Matlab, we still get a out of memory errors. To avoid this problem we chunk the matrix into smaller, more manageable matrices.
-    # Setting the chunk size to be particles x 0.05 -> 100,000 x 0.05 = 5000, translstes to p(current iteration curves(5000 curves at a time) | previous iteration curves).
+    # In the curve fitting algorithm we need to compute the p(current iteration curves | previous
+    # iteration curves). This matrix is huge when the number of particles (curves) is large, say 100,000. Even with a
+    # 8 Gb RAM, dedicated to Matlab, we still get a out of memory errors. To avoid this problem we chunk the matrix
+    # into smaller, more manageable matrices. Setting the chunk size to be particles x 0.05 -> 100,000 x 0.05 = 5000,
+    # translates to p(current iteration curves(5000 curves at a time) | previous iteration curves).
     analysis_settings['wgt_chunks'] = analysis_settings['particles'] * 0.05
     # If the chunk size is less then 5000 we set it be the number of particles itself
     if analysis_settings['wgt_chunks'] < 5000:
         analysis_settings['wgt_chunks'] = analysis_settings['particles']
 
     # Chunking trick II
-    if (not ('particle_chunks' in analysis_settings)):
+    if not ('particle_chunks' in analysis_settings):
         analysis_settings['particle_chunks'] = 2
         print('Missing particle chunks! It is set to a default of {}'.format(analysis_settings['particle_chunks']))
 
-    # Depending on the number of particle chunks we get start, end points and the number of particles within each chunk. For instance 1000 particles divided into 4 chunks will look like,
+    # Depending on the number of particle chunks we get start, end points and the number of particles within each chunk.
+    # For instance 1000 particles divided into 4 chunks will look like,
     # 0	250	250
     # 250	500	250
     # 500	750	250
     # 750	1000	250
 
     dummy = np.arange(0, analysis_settings['particles'],
-                      analysis_settings['particles']/analysis_settings['particle_chunks'])
-    analysis_settings['ptl_chunk_idx'] = np.stack((dummy, dummy + analysis_settings['particles']/analysis_settings['particle_chunks'],
-        np.full(np.shape(dummy), analysis_settings['particles']/analysis_settings['particle_chunks'])),
+                      analysis_settings['particles'] / analysis_settings['particle_chunks'])
+    analysis_settings['ptl_chunk_idx'] = np.stack(
+        (dummy, dummy + analysis_settings['particles'] / analysis_settings['particle_chunks'],
+         np.full(np.shape(dummy), analysis_settings['particles'] / analysis_settings['particle_chunks'])),
         axis=1)
 
     # Storing analysis relevant information into the analysis_settings struct
@@ -406,9 +431,10 @@ def preprocessing_setup(data, analysis_settings):
 
 # %% markdown
 # ## `PREPROCESSING_SETUP` Testing
-# We apply `preprocessing_setup` to the output of `eval_run_importance_sampler` and test for equivalent output between matlab and python versions.
-# No clear test is included yet for equivalence between `net_effect_clusters` attributes, since those are generated stochastically and it's unknown yet which statistical features should be equivalent between versions.
-# %%
+# We apply `preprocessing_setup` to the output of
+# `eval_run_importance_sampler` and test for equivalent output between matlab and python versions. No clear test is
+# included yet for equivalence between `net_effect_clusters` attributes, since those are generated randomly and
+# it's unknown yet which statistical features should be equivalent between versions. %%
 def test_preprocessing_setup():
     print('testing preprocessing_setup...')
     # numpy
@@ -442,6 +468,7 @@ def test_preprocessing_setup():
             continue
         print(key, python_analysis_settings[key], matlab_analysis_settings[key])
 
+
 # %% markdown
 # # scramble_dependent_variable(target_dependent_variables, target_net_effect_clusters)
 # To take a dependent variable vector and scramble it such that the net effect cluster groupings are NOT violated
@@ -462,21 +489,23 @@ def scramble_dependent_variable(target_dependent_variables, target_net_effect_cl
         raise ValueError('Size of input vectors must be the same!')
 
     # Detailed example
-    # example data matrix: target_dependent_variables = [1, 0, 1, 0, 0, 0, 1] and target_net_effect_clusters = [3, 5, 3, 7, 7, 5, 8]
+    # example data matrix: target_dependent_variables = [1, 0, 1, 0, 0, 0, 1]
+    # and target_net_effect_clusters = [3, 5, 3, 7, 7, 5, 8]
 
     # Fetch the sorted list of net effect clusters and their respective locations
     # e.g. for [3, 5, 3, 7, 7, 5, 8] will return [3, 3, 5, 5, 7, 7, 8] and [1, 3, 2, 6, 4, 5, 7]
-    sorted_neteff_clusters = np.sort(target_net_effect_clusters)
-    sorted_neteff_clusters_indices = np.argsort(target_net_effect_clusters)
-    just_ones = np.ones(np.shape(sorted_neteff_clusters)) # Populate a vector full of ones
+    sorted_net_effect_clusters = np.sort(target_net_effect_clusters)
+    sorted_net_effect_clusters_indices = np.argsort(target_net_effect_clusters)
+    just_ones = np.ones(np.shape(sorted_net_effect_clusters))  # Populate a vector full of ones
 
     # compute the length of each net effect cluster
     # e.g. for [3, 5, 3, 7, 7, 5, 8] will return [2, 2, 2, 1] i.e. 3 is repeated twice and so on
-    length_each_neteff_cluster = np.transpose(np.bincount(sorted_neteff_clusters))
-    length_each_neteff_cluster = length_each_neteff_cluster[length_each_neteff_cluster.astype(bool)]
+    length_of_each_net_effect_cluster = np.transpose(np.bincount(sorted_net_effect_clusters))
+    length_of_each_net_effect_cluster = length_of_each_net_effect_cluster[
+        length_of_each_net_effect_cluster.astype(bool)]
 
     # Get the unique list of clusters (i.e. excluding repetitions if any) e.g. [3, 5, 7, 8]
-    unique_neteff_clusters, unique_indices = np.unique(target_net_effect_clusters, return_index=True)
+    unique_net_effect_clusters, unique_indices = np.unique(target_net_effect_clusters, return_index=True)
     # Get the associated dependent variables (one per cluster; recall it is unique within a cluster) e.g. [1, 0, 0, 1]
     associated_dependent_variables = np.array(target_dependent_variables)[unique_indices.astype(int)]
     # scramble the dependent variables e.g. [0, 0, 1, 1]
@@ -485,21 +514,24 @@ def scramble_dependent_variable(target_dependent_variables, target_net_effect_cl
     if testing:
         scrambled_dependent_variables = np.array([0, 0, 1, 1])
 
-    # Now we will need to repeat each scrambled dependent variable for the length of that net effect cluster. The next three lines will result in
-    # [0, 0, 0, 0, 1, 1, 1] corresponding to [3, 3, 5, 5, 7, 7, 8] since the scrambled dependent variable looks like [0, 0, 1, 1] for [3, 5, 7, 8]
-    cumsum_clutsers = np.cumsum(length_each_neteff_cluster)
-    indicator_vector = np.zeros((cumsum_clutsers[-1]))
-    indicator_vector[np.append(np.array([0]), [cumsum_clutsers[:-1]])] = 1
+    # Now we will need to repeat each scrambled dependent variable for the length of that net effect cluster. The
+    # next three lines will result in [0, 0, 0, 0, 1, 1, 1] corresponding to [3, 3, 5, 5, 7, 7, 8] since the
+    # scrambled dependent variable looks like [0, 0, 1, 1] for [3, 5, 7, 8]
+    cumsum_clusters = np.cumsum(length_of_each_net_effect_cluster)
+    indicator_vector = np.zeros((cumsum_clusters[-1]))
+    indicator_vector[np.append(np.array([0]), [cumsum_clusters[:-1]])] = 1
 
     # Store the scrambled dependent variable in the respective cluster locations
     # The original vector looked like [3, 5, 3, 7, 7, 5, 8] so the scrambled vector will look like [0, 0, 0, 1, 1, 0, 1]
-    scrambled_vector = np.full(np.shape(sorted_neteff_clusters_indices), np.nan)
-    scrambled_vector[np.array(sorted_neteff_clusters_indices)] = scrambled_dependent_variables[np.cumsum(indicator_vector.astype(int))-1]
+    scrambled_vector = np.full(np.shape(sorted_net_effect_clusters_indices), np.nan)
+    scrambled_vector[np.array(sorted_net_effect_clusters_indices)] = scrambled_dependent_variables[
+        np.cumsum(indicator_vector.astype(int)) - 1]
 
     if np.any(np.isnan(scrambled_vector)):
         raise ValueError('Nan''s in scrambled dependent variable vector!')
 
     return scrambled_vector
+
 
 # %% markdown
 # # `SCRAMBLE_DEPENDENT_VARIABLE` Testing
@@ -507,9 +539,11 @@ def scramble_dependent_variable(target_dependent_variables, target_net_effect_cl
 # - `target_dependent_variables` = `[1, 0, 1, 0, 0, 0, 1]`
 # - `target_net_effect_clusters` = `[3, 5, 3, 7, 7, 5, 8]`
 #
-# However, since SCRAMBLE_DEPENDENT_VARIABLE is stochastic (and only shuffles values), we include a mode for the function that always sets random output to the value specified in the example.
+# However, since SCRAMBLE_DEPENDENT_VARIABLE is stochastic (and only shuffles values), we include a mode for the
+# function that always sets random output to the value specified in the example.
 #
-# Furthermore, we produce a parallel matlab script `eval_scramble_dependent_variable` that also substitutes instances of random output w/ the specified example output.
+# Furthermore, we produce a parallel matlab script `eval_scramble_dependent_variable` that also substitutes instances of
+# random output w/ the specified example output.
 
 # %%
 def test_scramble_dependent_variable(target_dependent_variables=None, target_net_effect_clusters=None):
@@ -528,9 +562,9 @@ def test_scramble_dependent_variable(target_dependent_variables=None, target_net
     eng.addpath('../original')
 
     # set parameters if undefined
-    if target_dependent_variables == None:
+    if target_dependent_variables is None:
         target_dependent_variables = [1, 0, 1, 0, 0, 0, 1]
-    if target_net_effect_clusters == None:
+    if target_net_effect_clusters is None:
         target_net_effect_clusters = [3, 5, 3, 7, 7, 5, 8]
 
     # generate output
@@ -542,6 +576,7 @@ def test_scramble_dependent_variable(target_dependent_variables=None, target_net
     assert np.all(python_output == matlab_output)
 
     print('All tests passed!')
+
 
 # %%
 # run tests only when is main file!
