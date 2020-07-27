@@ -1,4 +1,4 @@
-function [raw_data analysis_settings] = modified_run_importance_sampler()
+function [raw_data analysis_settings] = eval_run_importance_sampler()
 
 % [] = RUN_IMPORTANCE_SAMPLER()
 %

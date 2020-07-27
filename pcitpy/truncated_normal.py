@@ -73,6 +73,7 @@ def test_truncated_normal(a=-1.0, b=1.0, mu=0.1, sigma=0.001, n=10000.0):
     # We can set the number of bins with the `bins` kwarg
     axs[0].hist(python_output, bins=n_bins)
     axs[1].hist(matlab_output, bins=n_bins)
+    plt.show()
 
     print('Tests are passed if histograms exhibit similar (truncated normal) distributions!')
 

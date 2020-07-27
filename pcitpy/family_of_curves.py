@@ -57,7 +57,7 @@ def horz_indpnt_curve(get_info, input_params):
             raise ValueError('Missing input parameters!')
 
         net_effect_clusters = input_params[0]
-        particles = input_params[1]
+        particles = int(input_params[1])
         y1 = input_params[2][:, 0]
         x1 = input_params[2][:, 1]
         x2 = input_params[2][:, 2]
@@ -80,13 +80,13 @@ def horz_indpnt_curve(get_info, input_params):
             raise ValueError(
                 'Horizontal parameter 1 is NOT <= Horizontal parameter 2 in {}s family of curves'.format(curve_type))
 
-        x = np.full(len(net_effect_clusters), np.nan)
+        x = np.full((len(net_effect_clusters), particles), np.nan)
         y = []
 
         # Map the predictor variables to the associated y values for all curves / particles simultaneously
         for i in range(len(net_effect_clusters)):
-            cluster_idx = np.where(data[:, net_effect_clusters_column == net_effect_clusters[i]])
-            X = np.zeros((len(cluster_idx), int(particles)))
+            cluster_idx = np.nonzero(data[:, net_effect_clusters_column] == net_effect_clusters[i])[0]
+            X = np.zeros((len(cluster_idx), particles))
             for j in range(len(cluster_idx)):
                 if np.isnan(data[cluster_idx[j], predictor_var_column]):
                     x[i, :] = 0
@@ -97,7 +97,7 @@ def horz_indpnt_curve(get_info, input_params):
                                              data[cluster_idx[j], predictor_var_column] - 1)) + y4[ix3]
 
                     # If an activation is falling in the first segment of the curve then get the associated y val
-                    ix2 = -ix3 & np.logical_not(ix2) & (data[cluster_idx[j], predictor_var_column] > 0)  # segment #1
+                    ix2 = np.logical_and(np.logical_not(ix3), data[cluster_idx[j], predictor_var_column] > x1)  # seg #1
                     X[j, ix2] = (np.multiply(np.divide(y3[ix2] - y2[ix2], x2[ix2] - x1[ix2]),
                                              data[cluster_idx[j], predictor_var_column] - x1[ix2])) + y2[ix2]
 
@@ -110,11 +110,11 @@ def horz_indpnt_curve(get_info, input_params):
                     # If an activation is at the intercept of the curve then get the associated y val
                     ix0 = np.logical_not(ix3) & np.logical_not(ix2) & np.logical_not(ix1) & (
                             data[cluster_idx[j], predictor_var_column] == 0)  # Intercept (Boundary condition)
-                    X[j, ix0] = y1[ix0];
+                    X[j, ix0] = y1[ix0]
 
                     # If an item has net effects then taking the sum below will compute the net effects.
                     # If an item has no net effect then this loop will be executed only once and the sum has no effect
-                    x[i, :] = np.sum(X, 1)
+                    x[i, :] = np.sum(X, axis=0)
 
             # Our model enforces that the DV will need to be unique for items within a net effect cluster
             # i.e. all 1's or all 0's
@@ -125,7 +125,7 @@ def horz_indpnt_curve(get_info, input_params):
             if not y:
                 y = np.unique(data[cluster_idx, dependent_var_column])
             else:
-                y.concatenate(np.unique(data[cluster_idx, dependent_var_column]))
+                np.concatenate((y, np.unique(data[cluster_idx, dependent_var_column])))
 
         del X
         del ix0
@@ -252,8 +252,8 @@ def horz_indpnt_curve(get_info, input_params):
         out['yval'] = y_value
         if particles == 1:
             out['curve_params'] = input_params[0]
-            out['title_string'] = 'y1={}, x1={}, x2={} y2={}, y3={}, y4={}'.format(y1[0], x1[0], x2[0], y2[0], y3[0],
-                                                                                   y4[0])
+            out['title_string'] = 'y1={}, x1={}, x2={} y2={}, y3={}, y4={}'.format(
+                y1[0], x1[0], x2[0], y2[0], y3[0], y4[0])
     else:
         raise ValueError('Invalid operation!')
 
@@ -275,22 +275,28 @@ def test_compute_likelihood():
     # numpy
     import numpy as np
 
-    # package enabling loading mat files
-    from scipy.io import loadmat
+    # package enabling access/control of matlab from python
+    import matlab.engine
+
+    # matlab instance with relevant paths
+    eng = matlab.engine.start_matlab()
 
     # load input (and matlab output)
-    data = loadmat('..\\data\\test\\test_compute_likelihoods.mat')
-    ana_opt = data['ana_opt'][0][0]
-    param = data['param']
-    preprocessed_data = data['preprocessed_data']
+    data = eng.load('..\\data\\test\\test_compute_likelihoods.mat')
+    data['param'] = np.asarray(data['param'])
+    ana_opt = data['ana_opt']
+    ana_opt['ptl_chunk_idx'] = np.array(ana_opt['ptl_chunk_idx'])
+    ana_opt['data_matrix_columns'] = {key: int(value) for value, key in enumerate(ana_opt['data_matrix_columns'])}
+    preprocessed_data = np.asarray(data['preprocessed_data'])
     hold_betas = np.array([0, 1])
     ptl_idx = 0
     matlab_output = data['output_struct']
 
     # generate output
-    python_output = family_of_curves(ana_opt['curve_type'], 'compute_likelihood', ana_opt['net_effect_clusters'],
+    python_output = family_of_curves(ana_opt['curve_type'], 'compute_likelihood',
+                                     np.asarray(ana_opt['net_effect_clusters']),
                                      ana_opt['ptl_chunk_idx'][ptl_idx, 2],
-                                     param[int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(
+                                     data['param'][int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(
                                          ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :], hold_betas, preprocessed_data,
                                      ana_opt['distribution'], ana_opt['dist_specific_params'],
                                      ana_opt['data_matrix_columns'])

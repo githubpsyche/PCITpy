@@ -113,11 +113,11 @@ def importance_sampler(raw_data, analysis_settings):
                 ana_opt['distribution'], ana_opt['dist_specific_params'], ana_opt['data_matrix_columns'])
 
             # Gather weights
-            w[ana_opt['ptl_chunk_idx'][ptl_idx, 0]:ana_opt['ptl_chunk_idx'][ptl_idx, 1]] = output_struct['w']
+            w[int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(ana_opt['ptl_chunk_idx'][ptl_idx, 1])] = output_struct['w']
 
             # Gather predictor variable
-            net_effects[:, ana_opt['ptl_chunk_idx'][ptl_idx, 0]:ana_opt.ptl_chunk_idx[ptl_idx, 1]] = output_struct[
-                'net_effects']
+            net_effects[:, int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(ana_opt['ptl_chunk_idx'][ptl_idx, 1])] = \
+                output_struct['net_effects']
             if ptl_idx == 0:
                 # Gather dependent variable only once, since it is the same across all ptl_idx
                 dependent_var = output_struct['dependent_var']
@@ -132,18 +132,19 @@ def importance_sampler(raw_data, analysis_settings):
                 prev_iter_curve_param, param, ana_opt['wgt_chunks'], ana_opt['resolution'])
             w += p_theta_minus_q_theta
 
-        w = np.exp(w - special.logsumexp(w, 2))  # Normalize the weights using logsumexp to avoid numerical underflow
+        w = np.exp(w - special.logsumexp(w))  # Normalize the weights using logsumexp to avoid numerical underflow
         normalized_w[em, :] = w  # Store the normalized weights
 
         # Optimize betas using fminunc
         optimizing_function = family_of_distributions(ana_opt['distribution'], 'fminunc_both_betas', w, net_effects,
                                                       dependent_var, ana_opt['dist_specific_params'])
 
-        result = optimize.minimize(optimizing_function, hold_betas, options={'disp': True})
+        result = optimize.minimize(optimizing_function, np.array(hold_betas),
+                                   options={'disp': True, 'return_all': True})
         hold_betas = result.x
         f_value = result.fun
 
-        exp_max_f_values[em, 1] = f_value  # gather the f_values over em iterations
+        exp_max_f_values[em] = f_value  # gather the f_values over em iterations
 
     hold_betas_per_iter[em + 1, :] = hold_betas  # Store away the last em iteration betas
     print('>>>>>>>>> Final Betas: {}, {} <<<<<<<<<'.format(hold_betas[0], hold_betas[1]))
@@ -193,7 +194,7 @@ def importance_sampler(raw_data, analysis_settings):
     if np.any(np.isnan(w)):
         raise ValueError('NaNs in normalized weight vector w!')
 
-    w = np.exp(w - special.logsumexp(w, 2))  # Normalize the weights using logsumexp to avoid numerical underflow
+    w = np.exp(w - special.logsumexp(w))  # Normalize the weights using logsumexp to avoid numerical underflow
     normalized_w[em + 1, :] = w  # Store the normalized weights
 
     # Added for debugging chi-sq, might remove eventually
@@ -359,7 +360,7 @@ def compute_trunc_likes(x, mu):
     log_likelihood = -(np.log(tau) + np.log(np.multiply(0.5, special.erfc(-(
         np.divide(bounds[which_param, 2] - mu, np.multiply(tau, math.sqrt(2)))))))) + (
                              np.multiply(-0.5, np.log(2) + np.log(np.pi)) - (
-                                np.multiply(0.5, np.power(np.divide(x - mu, tau), 2))))
+                         np.multiply(0.5, np.power(np.divide(x - mu, tau), 2))))
     return log_likelihood
 
 
