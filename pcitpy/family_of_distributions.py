@@ -19,29 +19,31 @@ import numpy as np
 
 def family_of_distributions(distribution_name, get_info, *varargin):
     if distribution_name == 'bernoulli':
-        return bernoulli_distribution(get_info, *varargin)
+        return bernoulli_distribution(get_info, varargin)
     elif distribution_name == 'normal':
-        return normal_distribution(get_info, *varargin)
+        return normal_distribution(get_info, varargin)
     else:
         raise ValueError('Invalid distribution!')
 
 
 # %%
 def bernoulli_distribution(get_info, input_params):
-    if get_info == 'compute_densities':  # --> (1), Compute the log densities. NOTE: We compute the log(probability function)
+    if get_info == 'compute_densities':  # --> (1), Compute the log densities. We compute the log(probability function)
         if len(input_params) <= 1:
             raise ValueError('Missing input parameters!')
         z = input_params[0]
         y = input_params[1]
+        del input_params
 
         # Compute fz = 1 / (1 + exp(-z) - Logistic function
         fz = 1 / (1 + np.exp(-z))
-        fz = max(fz, np.finfo(float).eps)
-        fz = min(fz, 1 - np.finfo(float).eps)
+        del z
+        fz = np.fmax(fz, np.finfo(float).eps)
+        fz = np.fmin(fz, 1 - np.finfo(float).eps)
 
         # Compute bern_log_pmf = p ^ k + (1 - p) ^ (1 - k). http://en.wikipedia.org/wiki/Bernoulli_distribution
         # Here p = fz and k = y. Taking the log results in y x log(fz) + (1 - y) x log(1 - fz).
-        return np.sum(np.multiply(np.log(fz), y) + np.multiply(np.log(1 - fz), np.subtract(1, y)))
+        return np.sum((np.log(fz).T * y).T + (np.log(1 - fz).T * np.subtract(1, y)).T, axis=0)
 
     elif get_info == 'fminunc_both_betas':
         if len(input_params) <= 1:
@@ -75,23 +77,25 @@ def fminunc_bernoulli_both(betas, w, net_effects, dependent_var):
     beta_1 = betas[1]
 
     z = (beta_1 * net_effects) + beta_0
-    fz = 1 / 1 + np.exp(-z)
+    fz = 1 / (1 + np.exp(-z))
     if np.any(np.isinf(fz)):
         raise ValueError('Inf in fz matrix!')
-    fz = max(fz, np.finfo(float).eps)
-    fz = min(fz, 1 - np.finfo(float).eps)
+    fz = np.fmax(fz, np.finfo(float).eps)
+    fz = np.fmin(fz, 1 - np.finfo(float).eps)
 
     # Cost function
     # We will need to maximize the betas but fminunc minimizes hence a -ve.
     # Here we compute the log pmf over all trials and then component multiply by the weights
     # and then sum them up over all particles
-    f = -np.sum(w * np.sum(np.multiply(np.log(fz), dependent_var) + np.multiply(
-        np.log(1 - fz), np.subtract(1, dependent_var))))
+    f = -np.sum(w * np.sum((np.log(fz).T * dependent_var).T + (np.log(1 - fz).T * np.subtract(1, dependent_var)).T,
+                           axis=0), axis=0)
 
     # Here we take the partial derivative of log pmf over beta_0 and beta_1 respectively,
     # component multiply by the weights and sum them up over all particles
-    g = [-np.sum(w * np.sum(np.subtract(dependent_var, np.exp(z) / 1 - np.exp(z)))),
-         -np.sum(w * np.sum(np.multiply(net_effects, dependent_var) - ((net_effects * np.exp(z)) / (1 + np.exp(z)))))]
+    g = np.zeros(2)
+    g[0] = -np.sum(w * np.sum((dependent_var - (np.exp(z) / (1 + np.exp(z))).T).T, axis=0), axis=0)
+    g[1] = -np.sum(w * np.sum((net_effects.T * dependent_var).T - ((net_effects * np.exp(z)) / (1 + np.exp(z))),
+                              axis=0))
     if np.any(np.isinf(g)):
         raise ValueError('Inf in partial derivative!')
     if np.any(np.isnan(g)):

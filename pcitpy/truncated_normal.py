@@ -36,7 +36,7 @@ def truncated_normal(a, b, mu, sigma, n):
     # Refer to http://www.maths.uq.edu.au/~chancc/10Fstat3001/ass4sol.pdf for truncated normal dist sampling below --
     # If this source does not exist then refer to code in the link below, 
     # http://www.wiley.com/legacy/wileychi/koopbayesian/supp/normt_rnd.m 
-    return mu + sigma * (sqrt(2) * special.erfinv(2 * (phi_l + (phi_r - phi_l) * rand(int(n), 1)) - 1))
+    return mu + sigma * (sqrt(2) * special.erfinv(2 * (phi_l + (phi_r - phi_l) * rand(int(n))) - 1))
 
 
 # %% markdown 

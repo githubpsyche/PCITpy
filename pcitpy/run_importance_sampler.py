@@ -105,7 +105,7 @@ def eval_run_importance_sampler():
     # Populating the analysis_settings struct with algorithm settings
     analysis_settings = {}
     analysis_settings['analysis_id'] = 'test'  # analysis_id: specifies the target directory
-    analysis_settings['em_iterations'] = 20  # Number of expectation maximization iterations
+    analysis_settings['em_iterations'] = 2  # Number of expectation maximization iterations
     analysis_settings['particles'] = 100000  # Number of particles to be used in the importance sampling algorithm
     analysis_settings['curve_type'] = 'horz_indpnt'  # Name of family of curves to be used. Refer to family_of_curves
 

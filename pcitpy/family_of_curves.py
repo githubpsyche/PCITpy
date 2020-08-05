@@ -44,11 +44,11 @@ def horz_indpnt_curve(get_info, input_params):
 
     # --> (3), Indices of vertical parameters i.e. the ones corresponding to v* in the order of curve parameters
     elif get_info == 'get_vertical_params_only':
-        return np.array([1, 4, 5, 6])
+        return np.array([0, 3, 4, 5])
 
     # --> (4), Indices of horizontal parameters i.e. the ones corresponding to h* in the order of curve parameters
     elif get_info == 'get_horizontal_params_only':
-        return np.array([2, 3])
+        return np.array([1, 2])
 
     # --> (5), Get the curve y-vals (with or without net effects) for each of the P particle curves
     # and then compute the log probability mass function (pmf)
@@ -81,7 +81,7 @@ def horz_indpnt_curve(get_info, input_params):
                 'Horizontal parameter 1 is NOT <= Horizontal parameter 2 in {}s family of curves'.format(curve_type))
 
         x = np.full((len(net_effect_clusters), particles), np.nan)
-        y = []
+        y = np.array([])
 
         # Map the predictor variables to the associated y values for all curves / particles simultaneously
         for i in range(len(net_effect_clusters)):
@@ -122,10 +122,7 @@ def horz_indpnt_curve(get_info, input_params):
                 raise ValueError('Dependent var is NOT unique for net effect cluster {}'.format(i))
 
             # We accumulate the dependent variables for each net effect cluster
-            if not y:
-                y = np.unique(data[cluster_idx, dependent_var_column])
-            else:
-                np.concatenate((y, np.unique(data[cluster_idx, dependent_var_column])))
+            y = np.concatenate((y, np.unique(data[cluster_idx, dependent_var_column])))
 
         del X
         del ix0

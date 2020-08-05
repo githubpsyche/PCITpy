@@ -76,7 +76,7 @@ def common_to_all_curves(curve_type, get_info, *varargin):
         # E.g. if a vertical parameter is -1.02 then it is set to -1 since -1 is the lower bound for vertical parameters
         for i in range(nParams):
             out[:, i] = np.fmax(out[:, i], bounds[i, 0])
-            out[:, i] = np.fmax(out[:, i], bounds[i, 1])
+            out[:, i] = np.fmin(out[:, i], bounds[i, 1])
 
     elif get_info == 'curve_volumes':
         if len(varargin) < 1:
