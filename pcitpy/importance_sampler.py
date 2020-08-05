@@ -76,7 +76,7 @@ def importance_sampler(raw_data, analysis_settings):
 
         # Matrix to hold the predictor variables (taking net effects if relevant) over all particles
         net_effects = np.full((len(ana_opt['net_effect_clusters']), ana_opt['particles']), np.nan)
-        dependent_var = []  # cannot be initialized in advance since we don't know its length (dropping outliers)
+        dependent_var = np.array([])  # can't be initialized in advance as we don't know its length (dropping outliers)
 
         # Sampling curve parameters
         if em == 0:  # only for the first em iteration
@@ -88,7 +88,7 @@ def importance_sampler(raw_data, analysis_settings):
 
             # Here we sample curves (with repetitions) based on the weights
             param = prev_iter_curve_param[random.choices(np.arange(ana_opt['particles']),
-                                                         k=ana_opt['particles'], weights=normalized_w[em, :]), :]
+                                                         k=ana_opt['particles'], weights=normalized_w[em - 1, :]), :]
             # Add Gaussian noise since some curves are going to be identical due to the repetitions
             # NOISE: Sample from truncated normal distribution using individual curve parameter bounds,
             # mean = sampled curve parameters and sigma = tau
@@ -122,6 +122,7 @@ def importance_sampler(raw_data, analysis_settings):
                 # Gather dependent variable only once, since it is the same across all ptl_idx
                 dependent_var = output_struct['dependent_var']
 
+        del output_struct
         if np.any(np.isnan(w)):
             raise ValueError('NaNs in normalized weight vector w!')
 
@@ -139,7 +140,7 @@ def importance_sampler(raw_data, analysis_settings):
         optimizing_function = family_of_distributions(ana_opt['distribution'], 'fminunc_both_betas', w, net_effects,
                                                       dependent_var, ana_opt['dist_specific_params'])
 
-        result = optimize.minimize(optimizing_function, np.array(hold_betas),
+        result = optimize.minimize(optimizing_function, np.array(hold_betas), jac=True,
                                    options={'disp': True, 'return_all': True})
         hold_betas = result.x
         f_value = result.fun
@@ -246,22 +247,22 @@ def test_importance_sampler():
     import numpy as np
 
     # package enabling access/control of matlab from python
-    import matlab.engine
+    # import matlab.engine
 
     # matlab instance with relevant paths
-    eng = matlab.engine.start_matlab()
+    # eng = matlab.engine.start_matlab()
 
     # paths to matlab helper and model functions
-    eng.addpath('../original')
+    # eng.addpath('../original')
 
     # generate input data and settings
     from run_importance_sampler import eval_run_importance_sampler
     python_data, python_analysis_settings = eval_run_importance_sampler()
-    matlab_data, matlab_analysis_settings = eng.eval_run_importance_sampler(nargout=2)
+    # matlab_data, matlab_analysis_settings = eng.eval_run_importance_sampler(nargout=2)
 
     # generate output
     importance_sampler(python_data, python_analysis_settings)
-    eng.importance_sampler(matlab_data, matlab_analysis_settings, nargout=0)
+    # eng.importance_sampler(matlab_data, matlab_analysis_settings, nargout=0)
 
 
 # %% markdown
@@ -294,24 +295,25 @@ def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param,
     # Computing q(theta), i.e. what is the probability of a curve given all curves from the previous iteration
     # P(theta|old_theta)
     q_theta = np.zeros((nParticles, 1))
-    reduced_nParticles = nParticles / wgt_chunks
-    reduced_nParticles_idx = np.concatenate(np.arange(0, reduced_nParticles, nParticles),
-                                            np.arange(0, reduced_nParticles, nParticles) + reduced_nParticles - 1)
+    reduced_nParticles = int(nParticles / wgt_chunks)
+    reduced_nParticles_idx = np.vstack((np.arange(0, nParticles, reduced_nParticles),
+                                        np.arange(0, nParticles, reduced_nParticles) + reduced_nParticles))
 
     for idx in range(np.shape(reduced_nParticles_idx)[1]):
         prob_grp_lvl_curve = np.zeros((nParticles, reduced_nParticles))
-        target_indices = np.arange(reduced_nParticles_idx[1, idx], reduced_nParticles_idx[2, idx])
+        target_indices = np.arange(reduced_nParticles_idx[0, idx], reduced_nParticles_idx[1, idx])
         for npm in range(nParam):
             which_param = npm
-            nth_grp_lvl_param = np.repmat(param[:, npm], 1, reduced_nParticles)
-            nth_prev_iter_curve_param = np.transpose(prev_iter_curve_param[target_indices, npm])
-            prob_grp_lvl_curve = np.add(prob_grp_lvl_curve,
-                                        np.vectorize(compute_trunc_likes)(nth_grp_lvl_param, nth_prev_iter_curve_param))
+            nth_grp_lvl_param = np.tile(param[:, npm].reshape(-1, 1), (1, reduced_nParticles))
+            nth_prev_iter_curve_param = prev_iter_curve_param[target_indices, npm]
+            trunc_likes = np.array([compute_trunc_likes(nth_grp_lvl_param[:, i], nth_prev_iter_curve_param[i])
+                                    for i in range(len(nth_prev_iter_curve_param))]).T
+            prob_grp_lvl_curve = np.add(prob_grp_lvl_curve, trunc_likes)
 
-        if np.any(np.isnan(prob_grp_lvl_curve)):
-            raise ValueError('NaNs in probability of group level curves matrix!')
+            if np.any(np.isnan(prob_grp_lvl_curve)):
+                raise ValueError('NaNs in probability of group level curves matrix!')
 
-        q_theta = np.add(q_theta, (np.exp(prob_grp_lvl_curve) * np.transpose(normalized_w[target_indices])))
+        q_theta = np.add(q_theta, np.exp(prob_grp_lvl_curve) * normalized_w[target_indices])
 
     if np.any(np.isnan(q_theta)):
         raise ValueError('NaNs in q_theta vector!')
@@ -357,10 +359,10 @@ def compute_trunc_likes(x, mu):
     # This ugly thing below is a manifestation of log(1 ./ (tau .* (normcdf((bounds(which_param, 2) - mu) ./ tau) -
     # normcdf((bounds(which_param, 1) - mu) ./ tau))) .* normpdf((x - mu) ./ tau)) Refer to
     # http://en.wikipedia.org/wiki/Truncated_normal_distribution for the truncated normal distribution
-    log_likelihood = -(np.log(tau) + np.log(np.multiply(0.5, special.erfc(-(
-        np.divide(bounds[which_param, 2] - mu, np.multiply(tau, math.sqrt(2)))))))) + (
-                             np.multiply(-0.5, np.log(2) + np.log(np.pi)) - (
-                         np.multiply(0.5, np.power(np.divide(x - mu, tau), 2))))
+    log_likelihood = -(np.log(tau) + np.log(np.multiply(0.5, special.erfc(
+        -np.divide(bounds[which_param, 1] - mu, np.multiply(tau, math.sqrt(2))))) + (np.multiply(-0.5, special.erfc(
+            -np.divide(bounds[which_param, 0] - mu, np.multiply(tau, math.sqrt(2)))))))) + np.multiply(
+            -.5, np.log(2) + np.log(np.pi)) - np.multiply(.5, np.power(np.divide(x - mu, tau), 2))
     return log_likelihood
 
 
