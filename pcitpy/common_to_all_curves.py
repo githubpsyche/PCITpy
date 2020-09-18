@@ -230,7 +230,7 @@ def common_to_all_curves(curve_type, get_info, *varargin):
 # - common_to_all_curves('horz_indpnt', 'weighted_curve', importance_sampler_mat, 0.9, 4)
 
 # %%
-def test_common_to_all_curves():
+def blarg_common_to_all_curves():
     ############################################################################
     # setup
 
@@ -290,11 +290,11 @@ def test_common_to_all_curves():
 
     print('All tests passed!')
 
-
 # %%
 # run tests only when this is main file!
 if __name__ == '__main__':
-    test_common_to_all_curves()
+    #test_common_to_all_curves()
+    python_output = common_to_all_curves('horz_indpnt', 'auto_generate', 'con', 4.0)
 
 # %%
 
