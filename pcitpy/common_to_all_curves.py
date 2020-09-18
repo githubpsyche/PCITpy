@@ -211,7 +211,27 @@ def common_to_all_curves(curve_type, get_info, *varargin):
             raise ValueError('NaNs in curve parameters!')
 
     elif get_info == 'weighted_curve':
-        raise ValueError('Feature not added yet!')
+        if len(varargin) < 3:
+            raise ValueError('Missing input parameters in %s computation' % get_info)
+
+        # Additional information about credible interval can be found here: http://en.wikipedia.org/wiki/Credible_interval
+        credible_interval = varargin[1];
+        if credible_interval <=0:
+            raise ValueError('Resolution will need to be > 0!')
+
+        resolution = varargin[2];
+        if resolution <=0:
+            raise ValueError('Resolution will need to be > 0!')
+
+        # Grab the x and y values for each particle. For instance, if there are 100 particles,
+        # we use the x and y values for 100 different curves
+
+
+
+        out = 100
+
+
+        # raise ValueError('Feature not added yet!')
 
     else:
         raise ValueError('Invalid operation!')
@@ -230,7 +250,7 @@ def common_to_all_curves(curve_type, get_info, *varargin):
 # - common_to_all_curves('horz_indpnt', 'weighted_curve', importance_sampler_mat, 0.9, 4)
 
 # %%
-def test_common_to_all_curves():
+def _common_to_all_curves():
     ############################################################################
     # setup
 
@@ -238,13 +258,13 @@ def test_common_to_all_curves():
     import numpy as np
 
     # package enabling access/control of matlab from python
-    import matlab.engine
+    # import matlab.engine
 
     # matlab instance with relevant paths
-    eng = matlab.engine.start_matlab()
+    # eng = matlab.engine.start_matlab()
 
     # paths to matlab helper and model functions
-    eng.addpath('../original')
+    # eng.addpath('../original')
 
     ############################################################################
     # test initial sampling via matplotlib
@@ -291,10 +311,21 @@ def test_common_to_all_curves():
     print('All tests passed!')
 
 
+
+
 # %%
 # run tests only when this is main file!
 if __name__ == '__main__':
-    test_common_to_all_curves()
+    import scipy.io
+
+    output_name = '/Users/Arlene1/PyCharmProjects/PCITPy_Project/PCITpy/data/results/'
+
+    importance_sampler_mat = output_name + 'analysis-sim-2c_importance_sampler'
+    importance_sampler_mat = scipy.io.loadmat(importance_sampler_mat)
+
+    common_to_all_curves('horz_indpnt', 'weighted_curve', importance_sampler_mat, 0.9, 4)
+
+
 
 # %%
 

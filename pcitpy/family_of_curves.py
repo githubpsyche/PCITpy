@@ -17,7 +17,7 @@
 import numpy as np
 from numpy import matlib
 
-from pcitpy.family_of_distributions import family_of_distributions
+from family_of_distributions import family_of_distributions
 
 
 def family_of_curves(curve_type, get_info, *varargin):
@@ -209,22 +209,42 @@ def horz_indpnt_curve(get_info, input_params):
 
         particles = np.shape(input_params[0][:, 1])[0]
 
-        if np.any(input_params[0][:, [1, 4, 5, 6]] < -1) or np.any(input_params[0][:, [1, 4, 5, 6]] > 1):
+        if np.any(input_params[0][:, [0, 3, 4, 5]] < -1) or np.any(input_params[0][:, [0, 3, 4, 5]] > 1):
             raise ValueError('Vertical curve parameters exceed bounds [-1, 1]!')
-        if np.any(input_params[0][:, [2, 3]] < 0) or np.any(input_params[0][:, [2, 3]] > 1):
+        if np.any(input_params[0][:, [1, 2]] < 0) or np.any(input_params[0][:, [1, 2]] > 1):
             raise ValueError('Horizontal curve parameters exceed bounds [0, 1]!')
 
-        x_value = np.arange(0, 1 + resolution, np.power(.1, resolution))
+        x_value = np.arange(0, 1, np.power(.1, resolution))
         x_value = np.matlib.repmat(x_value, particles, 1)
         y_value = np.full(np.shape(x_value), np.nan)
         out = {}
 
-        y1 = np.matlib.repmat(input_params[0][:, 0], 1, np.shape(x_value)[1])
-        x1 = np.matlib.repmat(input_params[0][:, 1], 1, np.shape(x_value)[1])
-        x2 = np.matlib.repmat(input_params[0][:, 2], 1, np.shape(x_value)[1])
-        y2 = np.matlib.repmat(input_params[0][:, 3], 1, np.shape(x_value)[1])
-        y3 = np.matlib.repmat(input_params[0][:, 4], 1, np.shape(x_value)[1])
-        y4 = np.matlib.repmat(input_params[0][:, 5], 1, np.shape(x_value)[1])
+        # y1 = np.matlib.repmat(input_params[0][:, 0], np.shape(x_value)[1], 1)
+
+        # Suffers signal kill
+        # y1 = np.repeat(input_params[0][:, 0][:, np.newaxis], np.shape(x_value)[1], 1)
+        # x1 = np.repeat(input_params[0][:, 1][:, np.newaxis], np.shape(x_value)[1], 1)
+        # x2 = np.repeat(input_params[0][:, 2][:, np.newaxis], np.shape(x_value)[1], 1)
+
+        y1 = np.matlib.repmat(input_params[0][:, 0][:, np.newaxis], 1, np.shape(x_value)[1])
+        x1 = np.matlib.repmat(input_params[0][:, 1][:, np.newaxis], 1, np.shape(x_value)[1])
+        x2 = np.matlib.repmat(input_params[0][:, 2][:, np.newaxis], 1, np.shape(x_value)[1])
+
+        # Latest version, suffesr signal kill
+        # y1 = np.tile(input_params[0][:, 0][:, np.newaxis], (1, np.shape(x_value)[1]))
+        # x1 = np.tile(input_params[0][:, 1][:, np.newaxis], (1, np.shape(x_value)[1]))
+        # x2 = np.tile(i      # x1 = np.matlib.repmat(input_params[0][:, 1], np.shape(x_value)[1], 1).T
+        #         # x2 = np.matlib.repmat(input_params[0][:, 2], np.shape(x_value)[1], 1).T
+        #         # y2 = np.matlib.repmat(input_params[0][:, 3], np.shape(x_value)[1], 1).T
+        #         # y3 = np.matlib.repmat(input_params[0][:, 4], np.shape(x_value)[1], 1).T
+        #         # y4 = np.matlib.repmat(input_params[0][:, 5], np.shape(x_value)[1], 1).Tnput_params[0][:, 2][:, np.newaxis], (1, np.shape(x_value)[1]))
+        y2 = np.tile(input_params[0][:, 3][:, np.newaxis], (1, np.shape(x_value)[1]))
+        y3 = np.tile(input_params[0][:, 4][:, np.newaxis], (1, np.shape(x_value)[1]))
+        y4 = np.tile(input_params[0][:, 5][:, np.newaxis], (1, np.shape(x_value)[1]))
+
+
+
+
         if not np.all(np.all(x1 <= x2)):
             raise ValueError(
                 'Horizontal parameter 1 is NOT <= Horizontal parameter 2 in {} family of curves'.format(curve_type))
@@ -290,13 +310,13 @@ def test_compute_likelihood():
     matlab_output = data['output_struct']
 
     # generate output
-    python_output = family_of_curves(ana_opt['curve_type'], 'compute_likelihood',
-                                     np.asarray(ana_opt['net_effect_clusters']),
-                                     ana_opt['ptl_chunk_idx'][ptl_idx, 2],
-                                     data['param'][int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(
-                                         ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :], hold_betas, preprocessed_data,
-                                     ana_opt['distribution'], ana_opt['dist_specific_params'],
-                                     ana_opt['data_matrix_columns'])
+    # python_output = family_of_curves(ana_opt['curve_type'], 'compute_likelihood',
+    #                                  np.asarray(ana_opt['net_effect_clusters']),
+    #                                  ana_opt['ptl_chunk_idx'][ptl_idx, 2],
+    #                                  data['param'][int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(
+    #                                      ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :], hold_betas, preprocessed_data,
+    #                                  ana_opt['distribution'], ana_opt['dist_specific_params'],
+    #                                  ana_opt['data_matrix_columns'])
 
     return python_output
 
@@ -304,4 +324,11 @@ def test_compute_likelihood():
 # %%
 # run tests only when is main file!
 if __name__ == '__main__':
-    python_output = test_compute_likelihood()
+    import scipy.io
+
+    output_name = '/Users/Arlene1/PyCharmProjects/PCITPy_Project/PCITpy/data/results/'
+
+    importance_sampler_mat = output_name + 'analysis-sim-2c_importance_sampler'
+    importance_sampler_mat = scipy.io.loadmat(importance_sampler_mat)
+
+    family_of_curves('horz_indpnt', 'get_curve_xy_vals', importance_sampler_mat['curve_params'],4)
