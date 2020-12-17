@@ -28,9 +28,9 @@ from scipy import optimize
 import scipy.io as sio
 from scipy import special
 
-from pcitpy.family_of_distributions import family_of_distributions
-from pcitpy.likratiotest import likratiotest
-from pcitpy.truncated_normal import truncated_normal
+from family_of_distributions import family_of_distributions
+from likratiotest import likratiotest
+from truncated_normal import truncated_normal
 
 
 def importance_sampler(raw_data, analysis_settings):
@@ -81,7 +81,7 @@ def importance_sampler(raw_data, analysis_settings):
         # Sampling curve parameters
         if em == 0:  # only for the first em iteration
             param = common_to_all_curves(ana_opt['curve_type'], 'initial_sampling',
-                                         ana_opt['particles'], ana_opt['resolution'])  # Good old uniform sampling
+                                         ana_opt['particles'], ana_opt['resolution']).astype('float32')  # Good old uniform sampling
         else:  # for em iterations 2, 3, etc
             # Sample curve parameters from previous iteration's curve parameters based on normalized weights
             prev_iter_curve_param = param  # we need previous iteration's curve parameters to compute likelihood
@@ -301,13 +301,14 @@ def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param,
 
     for idx in range(np.shape(reduced_nParticles_idx)[1]):
         prob_grp_lvl_curve = np.zeros((nParticles, reduced_nParticles))
-        target_indices = np.arange(reduced_nParticles_idx[0, idx], reduced_nParticles_idx[1, idx])
+        target_indices = np.arange(
+            reduced_nParticles_idx[0, idx], reduced_nParticles_idx[1, idx])
         for npm in range(nParam):
             which_param = npm
-            nth_grp_lvl_param = np.tile(param[:, npm].reshape(-1, 1), (1, reduced_nParticles))
+            nth_grp_lvl_param = np.tile(
+                param[:, npm].reshape(-1, 1), (1, reduced_nParticles))
             nth_prev_iter_curve_param = prev_iter_curve_param[target_indices, npm]
-            trunc_likes = np.array([compute_trunc_likes(nth_grp_lvl_param[:, i], nth_prev_iter_curve_param[i])
-                                    for i in range(len(nth_prev_iter_curve_param))]).T
+            trunc_likes = compute_trunc_likes(nth_grp_lvl_param, nth_prev_iter_curve_param)
             prob_grp_lvl_curve = np.add(prob_grp_lvl_curve, trunc_likes)
 
             if np.any(np.isnan(prob_grp_lvl_curve)):
@@ -326,7 +327,7 @@ def compute_weights(curve_name, nParticles, normalized_w, prev_iter_curve_param,
     if np.any(np.isnan(p_theta)):
         raise ValueError('NaNs in p_theta vector!')
 
-    p_theta_minus_q_theta = np.transpose(np.log(p_theta)) - np.transpose(np.log(q_theta));
+    p_theta_minus_q_theta = np.transpose(np.log(p_theta)) - np.transpose(np.log(q_theta))
     return p_theta_minus_q_theta
 
 
@@ -362,7 +363,7 @@ def compute_trunc_likes(x, mu):
     log_likelihood = -(np.log(tau) + np.log(np.multiply(0.5, special.erfc(
         -np.divide(bounds[which_param, 1] - mu, np.multiply(tau, math.sqrt(2))))) + (np.multiply(-0.5, special.erfc(
             -np.divide(bounds[which_param, 0] - mu, np.multiply(tau, math.sqrt(2)))))))) + np.multiply(
-            -.5, np.log(2) + np.log(np.pi)) - np.multiply(.5, np.power(np.divide(x - mu, tau), 2))
+            -.5, np.log(2) + np.log(np.pi)) - (np.divide(x - mu, tau/np.sqrt(.5)) ** 2)
     return log_likelihood
 
 
@@ -370,3 +371,5 @@ def compute_trunc_likes(x, mu):
 # run tests only when is main file!
 if __name__ == '__main__':
     test_importance_sampler()
+
+# %%

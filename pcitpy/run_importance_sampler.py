@@ -15,7 +15,7 @@
 from scipy.io import loadmat
 import os
 
-from pcitpy.importance_sampler import importance_sampler
+from importance_sampler import importance_sampler
 
 
 def run_importance_sampler():
@@ -165,7 +165,7 @@ def eval_run_importance_sampler():
     # The lines below load the simulated data into the raw_data matrix.
     # Replace these lines of the code with code to load your actual data
 
-    results_dir = os.path.join('..', 'data')
+    results_dir = os.path.join('data')
     data_path = os.path.join(results_dir, analysis_settings['analysis_id'],
                              analysis_settings['analysis_id'] + '.mat')
     data = loadmat(data_path)['data']
