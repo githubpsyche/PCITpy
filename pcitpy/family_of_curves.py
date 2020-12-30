@@ -207,24 +207,27 @@ def horz_indpnt_curve(get_info, input_params):
         else:
             resolution = 4
 
-        particles = np.shape(input_params[0][:, 1])[0]
-
-        if np.any(input_params[0][:, [1, 4, 5, 6]] < -1) or np.any(input_params[0][:, [1, 4, 5, 6]] > 1):
+        curve = input_params[0]
+        if curve.ndim < 2:
+            curve = np.expand_dims(curve, axis=0)
+        particles = np.shape(curve[:, 1])[0]
+        if np.any(curve[:, [0, 3, 4, 5]] < -1) or np.any(curve[:, [0, 3, 4, 5]] > 1):
             raise ValueError('Vertical curve parameters exceed bounds [-1, 1]!')
-        if np.any(input_params[0][:, [2, 3]] < 0) or np.any(input_params[0][:, [2, 3]] > 1):
+        if np.any(curve[:, [1, 2]] < 0) or np.any(curve[:, [1, 2]] > 1):
             raise ValueError('Horizontal curve parameters exceed bounds [0, 1]!')
 
-        x_value = np.arange(0, 1 + resolution, np.power(.1, resolution))
+        x_value = np.arange(0, 1 + np.power(.1, resolution), np.power(.1, resolution))
         x_value = np.matlib.repmat(x_value, particles, 1)
         y_value = np.full(np.shape(x_value), np.nan)
         out = {}
 
-        y1 = np.matlib.repmat(input_params[0][:, 0], 1, np.shape(x_value)[1])
-        x1 = np.matlib.repmat(input_params[0][:, 1], 1, np.shape(x_value)[1])
-        x2 = np.matlib.repmat(input_params[0][:, 2], 1, np.shape(x_value)[1])
-        y2 = np.matlib.repmat(input_params[0][:, 3], 1, np.shape(x_value)[1])
-        y3 = np.matlib.repmat(input_params[0][:, 4], 1, np.shape(x_value)[1])
-        y4 = np.matlib.repmat(input_params[0][:, 5], 1, np.shape(x_value)[1])
+        y1 = np.tile(curve[:, 0][:, np.newaxis], (1, np.shape(x_value)[1]))
+        x1 = np.tile(curve[:, 1][:, np.newaxis], (1, np.shape(x_value)[1]))
+        x2 = np.tile(curve[:, 2][:, np.newaxis], (1, np.shape(x_value)[1]))
+        y2 = np.tile(curve[:, 3][:, np.newaxis], (1, np.shape(x_value)[1]))
+        y3 = np.tile(curve[:, 4][:, np.newaxis], (1, np.shape(x_value)[1]))
+        y4 = np.tile(curve[:, 5][:, np.newaxis], (1, np.shape(x_value)[1]))
+
         if not np.all(np.all(x1 <= x2)):
             raise ValueError(
                 'Horizontal parameter 1 is NOT <= Horizontal parameter 2 in {} family of curves'.format(curve_type))
@@ -236,7 +239,7 @@ def horz_indpnt_curve(get_info, input_params):
         y_value[ix2] = np.multiply(np.divide(y3[ix2] - y2[ix2], x2[ix2] - x1[ix2]), x_value[ix2] - x1[ix2]) + y2[ix2]
 
         ix1 = np.logical_not(ix3) & np.logical_not(ix2) & (x_value > 0)  # segment 1
-        y_value[ix1] = np.multiply(np.divide(y2[ix1] - y1[ix1], x1[ix1]), x_value[ix1]) + y[ix1]
+        y_value[ix1] = np.multiply(np.divide(y2[ix1] - y1[ix1], x1[ix1]), x_value[ix1]) + y1[ix1]
 
         ix0 = np.logical_not(ix3) & np.logical_not(ix2) & np.logical_not(ix1) & (x_value == 0)  # intercept
         y_value[ix0] = y1[ix0]
@@ -250,12 +253,11 @@ def horz_indpnt_curve(get_info, input_params):
         if particles == 1:
             out['curve_params'] = input_params[0]
             out['title_string'] = 'y1={}, x1={}, x2={} y2={}, y3={}, y4={}'.format(
-                y1[0], x1[0], x2[0], y2[0], y3[0], y4[0])
+                y1[0, 0], x1[0, 0], x2[0, 0], y2[0, 0], y3[0, 0], y4[0, 0])
     else:
         raise ValueError('Invalid operation!')
 
     return out
-
 
 # %% markdown
 # ## Testing
@@ -290,13 +292,13 @@ def test_compute_likelihood():
     matlab_output = data['output_struct']
 
     # generate output
-    python_output = family_of_curves(ana_opt['curve_type'], 'compute_likelihood',
-                                     np.asarray(ana_opt['net_effect_clusters']),
-                                     ana_opt['ptl_chunk_idx'][ptl_idx, 2],
-                                     data['param'][int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(
-                                         ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :], hold_betas, preprocessed_data,
-                                     ana_opt['distribution'], ana_opt['dist_specific_params'],
-                                     ana_opt['data_matrix_columns'])
+    # python_output = family_of_curves(ana_opt['curve_type'], 'compute_likelihood',
+    #                                  np.asarray(ana_opt['net_effect_clusters']),
+    #                                  ana_opt['ptl_chunk_idx'][ptl_idx, 2],
+    #                                  data['param'][int(ana_opt['ptl_chunk_idx'][ptl_idx, 0]):int(
+    #                                      ana_opt['ptl_chunk_idx'][ptl_idx, 1]), :], hold_betas, preprocessed_data,
+    #                                  ana_opt['distribution'], ana_opt['dist_specific_params'],
+    #                                  ana_opt['data_matrix_columns'])
 
     return python_output
 
@@ -304,4 +306,12 @@ def test_compute_likelihood():
 # %%
 # run tests only when is main file!
 if __name__ == '__main__':
-    python_output = test_compute_likelihood()
+    import scipy.io
+
+    #output_name = '../data/results/'
+
+    #importance_sampler_mat = output_name + 'analysis-sim-2c_importance_sampler'
+    #importance_sampler_mat = scipy.io.loadmat(importance_sampler_mat)
+
+    family_of_curves('horz_indpnt', 'get_curve_xy_vals',
+                     np.array([0.600000000000000, 0.200000000000000, 0.500000000000000, -0.400000000000000, 0.500000000000000, 0.900000000000000]))
