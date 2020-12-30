@@ -39,7 +39,7 @@ analysis_settings = struct(); % Creating a struct
 
 analysis_settings.analysis_id = 'test'; % analysis_id: specifies the target directory into which the output .mat will be located; if empty then the target directory is the timestamp of the form - YYYY-MM-DD-HH-MM
 
-analysis_settings.em_iterations = 20; % Number of expectation maximization iterations
+analysis_settings.em_iterations = 2; % Number of expectation maximization iterations
 analysis_settings.particles = 100000; % Number of particles to be used in the importance sampling algorithm
 analysis_settings.curve_type = 'horz_indpnt'; % Name of the family of curves to be used. Refer to the family_of_curves.m file for more info
 
