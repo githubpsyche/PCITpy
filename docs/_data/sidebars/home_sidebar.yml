@@ -7,24 +7,30 @@ entries:
 - folders:
   - folderitems:
     - output: web,pdf
-      title: Export to modules
-      url: /export.html
-    - output: web,pdf
-      title: Convert to html
-      url: /export2html.html
-    - output: web,pdf
-      title: Show doc
-      url: /showdoc.html
-    - output: web,pdf
-      title: Test functions
-      url: /test.html
-    - output: web,pdf
-      title: Core functions
-      url: /core.html
-    - output: web,pdf
-      title: Command line functions
-      url: /cli.html
+      title: Overview
+      url: /
     output: web
-    title: Notebook
+    title: Model Specification
+  - folderitems:
+    - output: web,pdf
+      title: Reproducing the Classic Instance-Based Model
+      url: Classic_Instance_Model.html
+    - output: web,pdf
+      title: Single Store Prototype
+      url: Single_Store_Prototype.html
+    - output: web,pdf
+      title: Dual Store ICMR Prototype
+      url: Dual_Store_Prototype.html
+    - output: web,pdf
+      title: Model Visualization
+      url: Model_Visualization.html
+    - output: web,pdf
+      title: Fast Dual Store Prototype
+      url: Fast_Dual_Store_Prototype.html
+    - output: web,pdf
+      title: Model Fitting
+      url: Model_Fitting.html
+    output: web
+    title: Appendix
   output: web
   title: Sidebar

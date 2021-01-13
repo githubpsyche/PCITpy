@@ -1,10 +1,8 @@
 {
-  "Notebook": {
-    "Export to modules": "/export",
-    "Convert to html": "/export2html",
-    "Show doc": "/showdoc",
-    "Test functions": "/test",
-    "Core functions": "/core",
-    "Command line functions": "/cli"
+  "pcitpy": {
+    "Overview": "/",
+    "Let's Make the Call to compute_trunc_likes not so slow": "Fix_Compute_Weights.html",
+    "Title": "Numba_Plus_Float32.html",
+    "Optimization With Numba": "Optimization_With_Numba.html"
   }
 }
