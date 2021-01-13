@@ -35,3 +35,4 @@ clean:
 
 clean_nbs: $(SRC)
 	nbdev_clean_nbs
+	nbdev_trust_nbs
