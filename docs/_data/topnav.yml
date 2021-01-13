@@ -2,7 +2,7 @@ topnav:
 - title: Topnav
   items:
     - title: github
-      external_url: https://github.com/githubpsyche/instance_cmr/tree/master/
+      external_url: https://github.com/githubpsyche/pcitpy/tree/master/
 
 #Topnav dropdowns
 topnav_dropdowns:
