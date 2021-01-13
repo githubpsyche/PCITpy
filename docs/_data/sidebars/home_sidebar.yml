@@ -10,27 +10,6 @@ entries:
       title: Overview
       url: /
     output: web
-    title: Model Specification
-  - folderitems:
-    - output: web,pdf
-      title: Reproducing the Classic Instance-Based Model
-      url: Classic_Instance_Model.html
-    - output: web,pdf
-      title: Single Store Prototype
-      url: Single_Store_Prototype.html
-    - output: web,pdf
-      title: Dual Store ICMR Prototype
-      url: Dual_Store_Prototype.html
-    - output: web,pdf
-      title: Model Visualization
-      url: Model_Visualization.html
-    - output: web,pdf
-      title: Fast Dual Store Prototype
-      url: Fast_Dual_Store_Prototype.html
-    - output: web,pdf
-      title: Model Fitting
-      url: Model_Fitting.html
-    output: web
-    title: Appendix
+    title: pcitpy
   output: web
   title: Sidebar
