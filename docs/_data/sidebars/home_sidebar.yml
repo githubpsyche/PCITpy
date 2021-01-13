@@ -13,6 +13,6 @@ entries:
       title: Helper Functions
       url: Helper_Functions.html
     output: web
-    title: pcitpy
+    title: PCITpy
   output: web
   title: Sidebar

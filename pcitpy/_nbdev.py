@@ -6,8 +6,8 @@ index = {"likratiotest": "00_Helper_Functions.ipynb"}
 
 modules = ["helper.py"]
 
-doc_url = "https://githubpsyche.github.io/pcitpy/"
+doc_url = "https://githubpsyche.github.io/PCITpy/"
 
-git_url = "https://github.com/githubpsyche/pcitpy/tree/master/"
+git_url = "https://github.com/githubpsyche/PCITpy/tree/master/"
 
 def custom_doc_links(name): return None
