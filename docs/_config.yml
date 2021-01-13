@@ -1,7 +1,7 @@
-repository: githubpsyche/pcitpy
+repository: githubpsyche/PCITpy
 output: web
-topnav_title: pcitpy
-site_title: pcitpy
+topnav_title: PCITpy
+site_title: PCITpy
 company_name: Princeton Computational Memory Lab
 description: The Probabilistic Curve Induction and Testing (P-CIT) toolbox, implemented in Python.
 # Set to false to disable KaTeX math
