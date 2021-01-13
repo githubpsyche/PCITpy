@@ -10,7 +10,7 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
-      title: Helper
+      title: Helper Functions
       url: Helper_Functions.html
     output: web
     title: pcitpy
