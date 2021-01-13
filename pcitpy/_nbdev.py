@@ -2,9 +2,9 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {}
+index = {"likratiotest": "00_Helper_Functions.ipynb"}
 
-modules = []
+modules = ["helper.py"]
 
 doc_url = "https://githubpsyche.github.io/pcitpy/"
 
