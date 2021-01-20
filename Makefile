@@ -5,6 +5,7 @@ SRC = $(wildcard *.ipynb)
 all: pcitpy clean_nbs docs docs_serve
 
 pcitpy: $(SRC)
+	jupytext --to ipynb index.py 
 	jupytext --to ipynb *_*.py
 	nbdev_build_lib
 
