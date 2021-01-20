@@ -2,7 +2,7 @@
 SHELL := /bin/bash
 SRC = $(wildcard *.ipynb)
 
-all: pcitpy clean_nbs docs docs_serve
+all: pcitpy clean docs
 
 pcitpy: $(SRC)
 	jupytext --to ipynb index.py 
@@ -31,9 +31,6 @@ pypi: dist
 dist: clean
 	python setup.py sdist bdist_wheel
 
-clean:
-	rm -rf dist
-
-clean_nbs: $(SRC)
+clean: $(SRC)
 	nbdev_clean_nbs
 	nbdev_trust_nbs

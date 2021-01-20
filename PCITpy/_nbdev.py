@@ -2,9 +2,16 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"likratiotest": "00_Helper_Functions.ipynb"}
+index = {"run_importance_sampler": "00_Parameter_Configuration.ipynb",
+         "preprocessing_setup": "01_Data_Preprocessing.ipynb",
+         "scramble_dependent_variable": "01_Data_Preprocessing.ipynb",
+         "likratiotest": "Helper_Functions.ipynb",
+         "truncated_normal": "Helper_Functions.ipynb",
+         "scale_data": "Helper_Functions.ipynb"}
 
-modules = ["helper.py"]
+modules = ["pcitpy.py",
+           "preprocessing.py",
+           "helper.py"]
 
 doc_url = "https://githubpsyche.github.io/PCITpy/"
 

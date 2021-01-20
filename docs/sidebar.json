@@ -1,6 +1,8 @@
 {
   "PCITpy": {
     "Overview": "/",
+    "Parameter Configuration": "Parameter_Configuration.html",
+    "Data Pre-Processing": "Data_Preprocessing.html",
     "Helper Functions": "Helper_Functions.html"
   }
 }

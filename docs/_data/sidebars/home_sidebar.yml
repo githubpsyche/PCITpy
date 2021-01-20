@@ -10,6 +10,12 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
+      title: Parameter Configuration
+      url: Parameter_Configuration.html
+    - output: web,pdf
+      title: Data Pre-Processing
+      url: Data_Preprocessing.html
+    - output: web,pdf
       title: Helper Functions
       url: Helper_Functions.html
     output: web
