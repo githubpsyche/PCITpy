@@ -13,11 +13,11 @@
 # ---
 
 # hide
-# default_exp helper
+# default_exp helpers
 from nbdev.showdoc import *
 
-# # Helper Functions
-# > Functions  reused across the toolbox to carry out miscellaneous numerical operations
+# # Additional Helper Functions
+# > Miscellaneous functions reused across the toolbox to carry out simple numerical operations
 
 # **Note:** A few helper functions included in the MATLAB version of the PCIT toolbox are not present here. When it comes to numerical helper functions `logsumexp.m` and `round_to.m`, this is because a Python version of the function is already included in a required scientific programming library such as `scipy` or `numpy`. When it comes to visualization helper functions `savesamesize.m` and `jbfill.m`, it's because equivalent Python functions are either unnecessary or not applicable in the context of `matplotlib`'s library. In either case, equivalent functionality is achieved without implementation of an additional toolbox function.
 
@@ -28,9 +28,6 @@ from scipy import stats
 
 def likratiotest(l1, l0, k1, k0):
     """Performs the likelihood ratio test for nested models.
-    
-    **Usage**:  
-    D, p = likratiotest(L1,L0,K1,K0)
       
     **Arguments**:  
     - L1: log-likelihood for alternative model
@@ -141,8 +138,6 @@ def scale_data(data, lower=-1.0, upper=1.0):
     We use this function in our toolbox to scale the predictor variable 
     between 0 and 1. 
 
-    SCALED = scale_data(DATA, LOWER, UPPER)
-
     **Arguments**:  
     - Data: data, numeric vector
     - Lower: lower range, numeric
@@ -177,11 +172,11 @@ def scale_data(data, lower=-1.0, upper=1.0):
 
 show_doc(scale_data, title_level=2)
 
-# As an example,
+# As an example we can execute the function with a few arbitrary parameters:
 
 scale_data([8.3256, 1000.0, 23.0, 564.0], 0, 1)
 
-# returns
+# As specified, it returns the vector scaled between 0 and 1.
 #
 # ```array([[0.        , 1.        , 0.0147976 , 0.56033956]])```
 #

@@ -16,9 +16,30 @@ entries:
       title: Data Pre-Processing
       url: Data_Preprocessing.html
     - output: web,pdf
-      title: Helper Functions
-      url: Helper_Functions.html
+      title: Curve Fitting
+      url: Curve_Fitting.html
+    - output: web,pdf
+      title: Analyzing Results
+      url: Analyzing_Results.html
+    - output: web,pdf
+      title: Simulating Data
+      url: Simulating_Data.html
     output: web
     title: PCITpy
+  - folderitems:
+    - output: web,pdf
+      title: Family of Curves
+      url: Family_of_Curves.html
+    - output: web,pdf
+      title: Family of Distributions
+      url: Family_of_Distributions.html
+    - output: web,pdf
+      title: Common to All Curves
+      url: Common_To_All_Curves.html
+    - output: web,pdf
+      title: Miscellaneous
+      url: Additional_Helper_Functions.html
+    output: web
+    title: Helper Functions
   output: web
   title: Sidebar

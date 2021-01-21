@@ -1,5 +1,5 @@
 # hide
-# default_exp preprocessing
+# default_exp pcitpy
 from nbdev.showdoc import *
 
 # # Data Pre-Processing
@@ -30,9 +30,10 @@ from nbdev.showdoc import *
 # +
 # export
 # hide
+
 # helper functions from pcitpy
-# from family_of_curves import family_of_curves
-# from scale_data import scale_data
+from PCITpy.family_of_curves import family_of_curves
+from PCITpy.helpers import scale_data
 
 # other dependencies
 import numpy as np
@@ -45,8 +46,6 @@ import os
 def preprocessing_setup(data, analysis_settings):
     """Performs sanity checks on the input data and the algorithm parameter 
     struct. Massages the data (i.e. drop outliers, zscore data, etc).
-    
-    PREPROCESSED_DATA, UPDATED_ANALYSIS_SETTINGS = PREPROCESSING_SETUP(RAW_DATA, ANALYSIS_SETTINGS)
 
     **Arguments**:  
     - data: Input data matrix (total number of trials x 6 columns)  
@@ -463,13 +462,8 @@ def preprocessing_setup(data, analysis_settings):
 
 show_doc(preprocessing_setup, title_level=2)
 
-# The function can be run and tested in isolation from the toolbox pipeline like so:
 
-# +
-from pcitpy.pcitpy import run_importance_sampler
-
-preprocessing_setup(run_importance_sampler(run_sampler=False))
-
+# The function can be run and tested in isolation from the toolbox pipeline with a line like `preprocessing_setup(run_importance_sampler(run_sampler=False))`.
 
 # +
 # export
@@ -479,8 +473,6 @@ def scramble_dependent_variable(target_dependent_variables,
                                 target_net_effect_clusters, testing=False):
     """Takes dependent variable vector and scramble it such that the net 
     effect cluster groupings are NOT violated.
-
-    OUTPUT = FAMILY_OF_CURVES(CURVE_TYPE, GET_INFO, VARARGIN)
 
     **Arguments**:  
     - target_dependent_variables: The vector you would like scrambled  
@@ -539,7 +531,7 @@ def scramble_dependent_variable(target_dependent_variables,
 
 # -
 
-show_doc(scramble_dependent_variable, title_level=3)
+show_doc(scramble_dependent_variable, title_level=2)
 
 # While `preprocessing_setup` is hard to demonstrate in isolation, its helper function `scramble_dependent_variable` is straightforward to illustrate:
 

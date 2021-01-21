@@ -3,6 +3,14 @@
     "Overview": "/",
     "Parameter Configuration": "Parameter_Configuration.html",
     "Data Pre-Processing": "Data_Preprocessing.html",
-    "Helper Functions": "Helper_Functions.html"
-  }
+    "Curve Fitting": "Curve_Fitting.html",
+    "Analyzing Results": "Analyzing_Results.html",
+    "Simulating Data": "Simulating_Data.html"
+  },
+    "Helper Functions": {
+        "Family of Curves": "Family_of_Curves.html",
+        "Family of Distributions": "Family_of_Distributions.html",
+        "Common to All Curves": "Common_To_All_Curves.html",
+        "Miscellaneous": "Additional_Helper_Functions.html"
+    }
 }
