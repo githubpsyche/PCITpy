@@ -6,7 +6,7 @@ from nbdev.showdoc import *
 # export
 # hide
 import numpy as np
-from PCITpy.family_of_curves import family_of_curves
+from pcitpy.family_of_curves import family_of_curves
 import matplotlib.pyplot as plt
 
 

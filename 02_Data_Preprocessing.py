@@ -32,8 +32,8 @@ from nbdev.showdoc import *
 # hide
 
 # helper functions from pcitpy
-from PCITpy.family_of_curves import family_of_curves
-from PCITpy.helpers import scale_data
+from pcitpy.family_of_curves import family_of_curves
+from pcitpy.helpers import scale_data
 
 # other dependencies
 import numpy as np

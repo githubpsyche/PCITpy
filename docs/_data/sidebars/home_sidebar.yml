@@ -38,7 +38,7 @@ entries:
       url: Common_To_All_Curves.html
     - output: web,pdf
       title: Miscellaneous
-      url: Additional_Helper_Functions.html
+      url: Miscellaneous_Helper_Functions.html
     output: web
     title: Helper Functions
   output: web

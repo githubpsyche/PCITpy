@@ -9,9 +9,8 @@ from nbdev.showdoc import *
 # hide
 
 import os
-import sys
 import numpy as np
-from PCITpy.family_of_curves import family_of_curves
+from pcitpy.family_of_curves import family_of_curves
 
 
 def simulate_data(analysis_id, noise_knob, curve_type, yval_distribution, net_effects, varargin):
@@ -118,6 +117,7 @@ def simulate_data(analysis_id, noise_knob, curve_type, yval_distribution, net_ef
     return out
 
 # +
+import sys
 import scipy.io
 
 sys.path.insert(0, '/Users/Arlene1/Documents')

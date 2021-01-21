@@ -13,11 +13,11 @@ from nbdev.showdoc import *
 # helper functions from pcitpy
 import math
 from numba import vectorize, float64, int32, int64, njit
-from PCITpy.pcitpy import preprocessing_setup
-from PCITpy.family_of_curves import family_of_curves
-from PCITpy.common_to_all_curves import common_to_all_curves
-from PCITpy.family_of_distributions import family_of_distributions
-from PCITpy.helpers import likratiotest, truncated_normal
+from pcitpy.pcitpy import preprocessing_setup
+from pcitpy.family_of_curves import family_of_curves
+from pcitpy.common_to_all_curves import common_to_all_curves
+from pcitpy.family_of_distributions import family_of_distributions
+from pcitpy.helpers import likratiotest, truncated_normal
 
 # other dependencies
 import numpy as np

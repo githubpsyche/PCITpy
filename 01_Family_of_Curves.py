@@ -7,7 +7,7 @@ from nbdev.showdoc import *
 # hide
 import numpy as np
 from numpy import matlib
-from PCITpy.family_of_distributions import family_of_distributions
+from pcitpy.family_of_distributions import family_of_distributions
 
 
 def family_of_curves(curve_type, get_info, *varargin):
