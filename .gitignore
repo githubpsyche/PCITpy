@@ -10,6 +10,7 @@ _tmp*
 tmp*
 tags
 desktop.ini
+/*.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
