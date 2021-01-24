@@ -18,8 +18,9 @@ import os
 
 
 def preprocessing_setup(data, analysis_settings):
-    """Performs sanity checks on the input data and the algorithm parameter
-    struct. Massages the data (i.e. drop outliers, zscore data, etc).
+    """
+    Performs sanity checks on the input data and the algorithm parameter struct. Massages the data (i.e. drop outliers,
+    zscore data, etc).
 
     **Arguments**:
     - data: Input data matrix (total number of trials x 6 columns)
@@ -28,7 +29,6 @@ def preprocessing_setup(data, analysis_settings):
     **Returns**:
     - data: Input data matrix (if applicable, outlier free, zscored, category specific data only, etc)
     - analysis_settings: Struct with algorithm parameters; some additional parameters are added to this struct as well
-
     """
 
     print('********** START OF MESSAGES **********')
@@ -436,8 +436,8 @@ def preprocessing_setup(data, analysis_settings):
 
 def scramble_dependent_variable(target_dependent_variables,
                                 target_net_effect_clusters, testing=False):
-    """Takes dependent variable vector and scramble it such that the net
-    effect cluster groupings are NOT violated.
+    """
+    Takes dependent variable vector and scramble it such that the net effect cluster groupings are NOT violated.
 
     **Arguments**:
     - target_dependent_variables: The vector you would like scrambled

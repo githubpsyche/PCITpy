@@ -47,8 +47,9 @@ import os
 
 
 def preprocessing_setup(data, analysis_settings):
-    """Performs sanity checks on the input data and the algorithm parameter 
-    struct. Massages the data (i.e. drop outliers, zscore data, etc).
+    """
+    Performs sanity checks on the input data and the algorithm parameter struct. Massages the data (i.e. drop outliers,
+    zscore data, etc).
 
     **Arguments**:  
     - data: Input data matrix (total number of trials x 6 columns)  
@@ -57,7 +58,6 @@ def preprocessing_setup(data, analysis_settings):
     **Returns**:  
     - data: Input data matrix (if applicable, outlier free, zscored, category specific data only, etc)  
     - analysis_settings: Struct with algorithm parameters; some additional parameters are added to this struct as well  
-    
     """
     
     print('********** START OF MESSAGES **********')
@@ -466,7 +466,17 @@ show_doc(preprocessing_setup, title_level=2)
 
 
 # %% [markdown]
-# The function can be run and tested in isolation from the toolbox pipeline with a line like `preprocessing_setup(run_importance_sampler(run_sampler=False))`.
+# The function can be run in isolation from the toolbox pipeline very concisely. For example:
+
+# %%
+from pcitpy.run_importance_sampler import run_importance_sampler
+
+
+preprocessing_setup(run_importance_sampler(run_sampler=False))
+
+# %% [markdown]
+# However, this isn't a typical use case for the function. The `importance_sampler` module calls the function directly
+# at start of execution, making manual execution of `preprocessing_setup` redundant.
 
 # %%
 # export
@@ -474,8 +484,8 @@ show_doc(preprocessing_setup, title_level=2)
 
 def scramble_dependent_variable(target_dependent_variables, 
                                 target_net_effect_clusters, testing=False):
-    """Takes dependent variable vector and scramble it such that the net 
-    effect cluster groupings are NOT violated.
+    """
+    Takes dependent variable vector and scramble it such that the net effect cluster groupings are NOT violated.
 
     **Arguments**:  
     - target_dependent_variables: The vector you would like scrambled  
