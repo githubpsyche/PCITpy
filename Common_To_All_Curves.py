@@ -1,8 +1,9 @@
+# %%
 # hide
 # default_exp common_to_all_curves
 from nbdev.showdoc import *
 
-# +
+# %%
 # export
 # hide
 import numpy as np
@@ -68,11 +69,11 @@ def common_to_all_curves(curve_type, get_info, *varargin):
         raise ValueError('Invalid operation!')
 
 
-# -
-
+# %%
 show_doc(common_to_all_curves, title_level=1)
 
 
+# %%
 # export
 # hide
 def initial_sampling(curve_type, nParticles, resolution):
@@ -108,9 +109,11 @@ def initial_sampling(curve_type, nParticles, resolution):
     return out
 
 
+# %%
 show_doc(initial_sampling, title_level=2)
 
 
+# %%
 # export
 # hide
 def check_if_exceed_bound(curve_type, params):
@@ -144,9 +147,11 @@ def check_if_exceed_bound(curve_type, params):
     return params
 
 
+# %%
 show_doc(check_if_exceed_bound, title_level=2)
 
 
+# %%
 # export
 # hide
 def curve_volumes(curve_type, resolution):
@@ -168,9 +173,11 @@ def curve_volumes(curve_type, resolution):
     return total_vol
 
 
+# %%
 show_doc(curve_volumes, title_level=2)
 
 
+# %%
 # export
 # hide
 def flip_vertical_params(curve_type, input_params):
@@ -191,9 +198,11 @@ def flip_vertical_params(curve_type, input_params):
     return out
 
 
+# %%
 show_doc(flip_vertical_params, title_level=2)
 
 
+# %%
 # export
 # hide
 def sort_horizontal_params(curve_type, input_params):
@@ -220,9 +229,11 @@ def sort_horizontal_params(curve_type, input_params):
     return out
 
 
+# %%
 show_doc(sort_horizontal_params, title_level=2)
 
 
+# %%
 # export
 # hide
 def draw_bcm_curve(curve_type, input_params, resolution):
@@ -260,9 +271,11 @@ def draw_bcm_curve(curve_type, input_params, resolution):
     return out
 
 
+# %%
 show_doc(draw_bcm_curve, title_level=2)
 
 
+# %%
 # export
 # hide
 def auto_generate(curve_type, input_params, resolution):
@@ -316,9 +329,11 @@ def auto_generate(curve_type, input_params, resolution):
     return out
 
 
+# %%
 show_doc(auto_generate, title_level=2)
 
 
+# %%
 # export
 # hide
 def weighted_curve(curve_type):
@@ -328,4 +343,5 @@ def weighted_curve(curve_type):
     raise ValueError('Feature not added yet!')
 
 
+# %%
 show_doc(weighted_curve, title_level=2)

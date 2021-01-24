@@ -1,13 +1,16 @@
+# %%
 # hide
 # default_exp importance_sampler
 from nbdev.showdoc import *
 
+# %% [markdown]
 # # Curve Fitting
 
+# %% [markdown]
 # For description of the curve-fitting procedure, see the "Estimating the plasticity curve" section of
 # main paper and the "curve-fitting algorithm details" section of the supplementary materials.
 
-# +
+# %%
 # export
 # hide
 # helper functions from pcitpy
@@ -241,6 +244,5 @@ def importance_sampler(raw_data, analysis_settings):
     print('Finish time {}/{} {}:{}'.format(time.month, time.day, time.hour, time.minute))
 
 
-# -
-
+# %%
 show_doc(importance_sampler, title_level=2)

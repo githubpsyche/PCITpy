@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
+# %%
 # hide
 # default_exp run_importance_sampler
 from nbdev.showdoc import *
 
+# %% [markdown]
 # # Parameter Configuration
 
+# %% [markdown]
 # Here we review the requirements for and toolbox functions supporting the configuration of parameters for curve-fitting with P-CIT before execution of the core `importance_sampler` procedure. Most language-agnostic guidance is recreated directly from the [P-CIT Toolbox Manual](https://github.com/PrincetonUniversity/p-cit-toolbox) provided by Annamalai Natarajan, Samuel Gershman, Luis Piloto, Greg Detre, and Kenneth Norman with Princeton University. 
 
+# %% [markdown]
 # ## Data Matrix
 
+# %% [markdown]
 # The dimensionality of the data matrix that holds the information required for the analysis is $T \times 6$.
 # $T$ here corresponds to the total number of entries (over all subjects, all items, all repetitions) that
 # you would like analyzed. All entries in the data matrix will need to be numeric (exception-the
@@ -17,6 +22,7 @@ from nbdev.showdoc import *
 # classifier, was trained on four categories (face, scene, car, shoe) and tested on two categories (face,
 # scene) only.
 
+# %% [markdown]
 # - **Column 1** -_subject id_: Within a data matrix, each subject should be assigned a unique subject ID. From the example data matrix you can see that subject IDs are the same for all entries within a subject.
 #
 # - **Column 2** -_trial number_: The trial number must be unique within each subject but can be repeated across subjects. In the example data matrix, the trial numbers go from 1 through 106 for subject 1 before being repeated for subject 2.
@@ -31,7 +37,7 @@ from nbdev.showdoc import *
 #
 # Table 1 in the P-CIT Toolbox Manual depicts a variant of the think/no-think analysis in which 8 no-think items were repeated 12 times and 10 baseline items were assigned one row each; this brings the total number of rows per subject to 106 (8 x 12 + 10 x 1). In the think/no-think paper, authors analyzed data from a total of 26 subjects, hence the total number of rows in the data matrix for this variant of the think/no-think analysis is 2756. They discuss other variants of the think/no-think analysis in Section 4.12 of the Manual.
 
-# +
+# %%
 # export
 # hide
 from pcitpy.importance_sampler import importance_sampler
@@ -132,10 +138,10 @@ def run_importance_sampler(analysis_settings=None, run_sampler=True):
         return data, analysis_settings
 
 
-# -
-
+# %%
 show_doc(run_importance_sampler, title_level=2)
 
+# %% [markdown]
 # In its original implementation in MATLAB, as opposed to accepting any 
 # input parameter configuration, parameters were specified within 
 # `run_importance_sampler` by altering variable assignments in its code. For 

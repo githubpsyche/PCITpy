@@ -1,9 +1,12 @@
+# %%
 # hide
 # default_exp preprocessing_setup
 from nbdev.showdoc import *
 
+# %% [markdown]
 # # Data Pre-Processing
 
+# %% [markdown]
 # Missing and/or incorrect parameters initialized in `run_importance_sampler` are reset in `preprocessing_setup`. `preprocessing_setup` also preprocesses data based on the specified parameter configuration. From the parameter settings in Table 2 of the P-CIT Toolbox Manual, we see that the predictor variable can be z-scored and outliers can be dropped. We also can generate bootstrap data, scramble the dependent variable, scale the predictor variable between 0 and 1 (this is a mandatory step), and we can perform the analysis on one or more categories while leaving out data from irrelevant categories. Trials where the predictor variable is set to NaN are filtered out (rows removed) for purposes of z-scoring, dropping outliers and scaling. These filtered rows are appended to the data matrix following those pre-processing steps. For, 
 #
 # **Simple data** analysis (includes both think/no-think and simulated data) the order of pre-processing
@@ -27,7 +30,7 @@ from nbdev.showdoc import *
 # 4. Scale predictor variable between 0 and 1
 # 5. Scramble the dependent variable depending on the scrambling technique (see the "Nonparametric statistical tests" section of the main paper, and Section 4.8 of the Manual).
 
-# +
+# %%
 # export
 # hide
 
@@ -458,14 +461,14 @@ def preprocessing_setup(data, analysis_settings):
     return data, analysis_settings
 
 
-# -
-
+# %%
 show_doc(preprocessing_setup, title_level=2)
 
 
+# %% [markdown]
 # The function can be run and tested in isolation from the toolbox pipeline with a line like `preprocessing_setup(run_importance_sampler(run_sampler=False))`.
 
-# +
+# %%
 # export
 # hide
 
@@ -529,12 +532,14 @@ def scramble_dependent_variable(target_dependent_variables,
     return scrambled_vector
 
 
-# -
-
+# %%
 show_doc(scramble_dependent_variable, title_level=2)
 
+# %% [markdown]
 # While `preprocessing_setup` is hard to demonstrate in isolation, its helper function `scramble_dependent_variable` is straightforward to illustrate:
 
+# %%
 scramble_dependent_variable([1, 0, 1, 0, 0, 0, 1], [3, 5, 3, 7, 7, 5, 8])
 
+# %% [markdown]
 # `array([1., 1., 1., 0., 0., 1., 0.])`

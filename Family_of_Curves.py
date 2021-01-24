@@ -1,8 +1,9 @@
+# %%
 # hide
 # default_exp family_of_curves
 from nbdev.showdoc import *
 
-# +
+# %%
 # export
 # hide
 import numpy as np
@@ -28,11 +29,11 @@ def family_of_curves(curve_type, get_info, *varargin):
         raise ValueError('Invalid curve!')
 
 
-# -
-
+# %%
 show_doc(family_of_curves, title_level=1)
 
 
+# %%
 # export
 # hide
 def horz_indpnt_curve(get_info, input_params):
@@ -91,9 +92,11 @@ def horz_indpnt_curve(get_info, input_params):
     return out
 
 
+# %%
 show_doc(horz_indpnt_curve, title_level=2)
 
 
+# %%
 # export
 # hide
 def compute_horz_indpnt_likelihood(input_params):
@@ -197,9 +200,11 @@ def compute_horz_indpnt_likelihood(input_params):
             'dependent_var': y}
 
 
+# %%
 show_doc(compute_horz_indpnt_likelihood, title_level=3)
 
 
+# %%
 # export
 # hide
 def count_horz_indpnt_particles(input_params):
@@ -260,9 +265,11 @@ def count_horz_indpnt_particles(input_params):
            & (input_params[0][:, 3] >= input_params[0][:, 4]) & (input_params[0][:, 3] <= 1)
 
 
+# %%
 show_doc(count_horz_indpnt_particles, title_level=3)
 
 
+# %%
 # export
 # hide
 def get_horz_indpnt_curve_xy_vals(input_params):
@@ -336,4 +343,5 @@ def get_horz_indpnt_curve_xy_vals(input_params):
             y1[0, 0], x1[0, 0], x2[0, 0], y2[0, 0], y3[0, 0], y4[0, 0])
 
 
+# %%
 show_doc(get_horz_indpnt_curve_xy_vals, title_level=3)

@@ -1,8 +1,9 @@
+# %%
 # hide
 # default_exp family_of_distributions
 from nbdev.showdoc import *
 
-# +
+# %%
 # export
 # hide
 import numpy as np
@@ -34,11 +35,11 @@ def family_of_distributions(distribution_name, get_info, *varargin):
         raise ValueError('Invalid distribution!')
 
 
-# -
-
+# %%
 show_doc(family_of_distributions, title_level=1)
 
 
+# %%
 # export
 # hide
 def bernoulli_distribution(get_info, input_params):
@@ -77,9 +78,11 @@ def bernoulli_distribution(get_info, input_params):
         raise ValueError('Invalid operation!')
 
 
+# %%
 show_doc(bernoulli_distribution, title_level=2)
 
 
+# %%
 # export
 # hide
 def fminunc_bernoulli_both(betas, w, net_effects, dependent_var):
@@ -129,10 +132,11 @@ def fminunc_bernoulli_both(betas, w, net_effects, dependent_var):
     return f, g
 
 
+# %%
 show_doc(fminunc_bernoulli_both, title_level=3)
 
 
-# +
+# %%
 # export
 # hide 
 
@@ -169,11 +173,11 @@ def normal_distribution(get_info, input_params):
         raise ValueError('Invalid operation!')
 
 
-# -
-
+# %%
 show_doc(normal_distribution, title_level=2)
 
 
+# %%
 # export
 # hide
 def fminunc_normal_both(betas, w, net_effects, dependent_var, dist_specific_params):
@@ -221,4 +225,5 @@ def fminunc_normal_both(betas, w, net_effects, dependent_var, dist_specific_para
     return f, g
 
 
+# %%
 show_doc(fminunc_normal_both, title_level=3)

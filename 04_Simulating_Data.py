@@ -1,10 +1,12 @@
+# %%
 # hide
 # default_exp simulate_data
 from nbdev.showdoc import *
 
+# %% [markdown]
 # # Simulating Data
 
-# +
+# %%
 # export
 # hide
 
@@ -116,7 +118,7 @@ def simulate_data(analysis_id, noise_knob, curve_type, yval_distribution, net_ef
 
     return out
 
-# +
+# %%
 import sys
 import scipy.io
 

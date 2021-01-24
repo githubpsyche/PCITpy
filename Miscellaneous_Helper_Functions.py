@@ -3,8 +3,8 @@
 #   jupytext:
 #     text_representation:
 #       extension: .py
-#       format_name: light
-#       format_version: '1.5'
+#       format_name: percent
+#       format_version: '1.3'
 #       jupytext_version: 1.7.1
 #   kernelspec:
 #     display_name: Python 3
@@ -12,16 +12,19 @@
 #     name: python3
 # ---
 
+# %%
 # hide
 # default_exp helpers
 from nbdev.showdoc import *
 
+# %% [markdown]
 # # Additional Helper Functions
 # > Miscellaneous functions reused across the toolbox to carry out simple numerical operations
 
+# %% [markdown]
 # **Note:** A few helper functions included in the MATLAB version of the PCIT toolbox are not present here. When it comes to numerical helper functions `logsumexp.m` and `round_to.m`, this is because a Python version of the function is already included in a required scientific programming library such as `scipy` or `numpy`. When it comes to visualization helper functions `savesamesize.m` and `jbfill.m`, it's because equivalent Python functions are either unnecessary or not applicable in the context of `matplotlib`'s library. In either case, equivalent functionality is achieved without implementation of an additional toolbox function.
 
-# +
+# %%
 # export
 # hide
 from scipy import stats
@@ -45,19 +48,21 @@ def likratiotest(l1, l0, k1, k0):
     return D, p
 
 
-# -
-
+# %%
 show_doc(likratiotest, title_level=2)
 
+# %% [markdown]
 # This function implements the $\beta_1$ likelihood-ratio test described in Section 4.10 of the [P-CIT Toolbox Manual](https://github.com/PrincetonUniversity/p-cit-toolbox). 
 #
 # If we want to build confidence that this function is an exact reproduction of the MATLAB implementation, we can ask whether our version returns `(-20, 1)` for the arguments `(l1=10.0, l0=20.0, k1=8.0, k0=5.0)` as the MATLAB version does:
 
+# %%
 likratiotest(l1=10.0, l0=20.0, k1=8.0, k0=5.0)
 
+# %% [markdown]
 # `(-20.0, 1.0)`
 
-# +
+# %%
 # export
 # hide
 from scipy import special
@@ -97,13 +102,13 @@ def truncated_normal(a, b, mu, sigma, n):
     return mu + sigma * (sqrt(2) * special.erfinv(2 * (phi_l + (phi_r - phi_l) * rand(int(n))) - 1))
 
 
-# -
-
+# %%
 show_doc(truncated_normal, title_level=2)
 
+# %% [markdown]
 # As an example, we can generate and visualize the result of applying the function to some arbitrary paremeters:
 
-# +
+# %%
 import matplotlib.pyplot as plt
 
 # generate a sample
@@ -117,15 +122,15 @@ plt.savefig('figures/truncated_normal_example.svg')
 plt.show()
 
 sample
-# -
 
+# %% [markdown]
 # ![](figures/truncated_normal_example.svg)
 # ```
 # array([0.88296168, 1.22801193, 0.8565991 , ..., 0.87280798, 1.09364587,
 #        0.96110738])
 # ```
 
-# +
+# %%
 # export
 # hide
 import numpy as np
@@ -168,14 +173,16 @@ def scale_data(data, lower=-1.0, upper=1.0):
     return scaled
 
 
-# -
-
+# %%
 show_doc(scale_data, title_level=2)
 
+# %% [markdown]
 # As an example we can execute the function with a few arbitrary parameters:
 
+# %%
 scale_data([8.3256, 1000.0, 23.0, 564.0], 0, 1)
 
+# %% [markdown]
 # As specified, it returns the vector scaled between 0 and 1.
 #
 # ```array([[0.        , 1.        , 0.0147976 , 0.56033956]])```
