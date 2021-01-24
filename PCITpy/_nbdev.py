@@ -30,7 +30,10 @@ index = {"run_importance_sampler": "00_Parameter_Configuration.ipynb",
          "truncated_normal": "Miscellaneous_Helper_Functions.ipynb",
          "scale_data": "Miscellaneous_Helper_Functions.ipynb"}
 
-modules = ["pcitpy.py",
+modules = ["run_importance_sampler.py",
+           "preprocessing_setup.py",
+           "importance_sampler.py",
+           "simulate_data.py",
            "common_to_all_curves.py",
            "family_of_curves.py",
            "family_of_distributions.py",

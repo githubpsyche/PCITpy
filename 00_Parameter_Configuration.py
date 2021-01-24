@@ -34,7 +34,7 @@ from nbdev.showdoc import *
 # +
 # export
 # hide
-from pcitpy.pcitpy import importance_sampler
+from pcitpy.importance_sampler import importance_sampler
 from scipy.io import loadmat
 import os
 

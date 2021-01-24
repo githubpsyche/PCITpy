@@ -18,4 +18,49 @@ So what will I do?
 # January 24
 Okay, let's get started. 
 
+I'll maintain a list of issues to eventually address:
+- Percent format for script-based notebooks
+- Overview notebook for helper subsection
+- Apparent circular dependencies depending on order of notebook scripts.
+- No clear workflow for iterative improvements
+- A world of code to add or test once I have that set up.
+
 We have already renamed each file. Let's reset the various libraries and htmls, and see if I can pull off a `make`. 
+
+The error is reproduced for a few notebooks:
+
+```
+converting: C:\Users\gunnj\Google Drive\pcitpy\Miscellaneous_Helper_Functions.ipynb
+An error occurred while executing the following cell:
+------------------
+from nbdev.showdoc import show_doc
+from pcitpy.pcitpy import *
+------------------
+
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-1-f1058062f9de> in <module>
+      1 from nbdev.showdoc import show_doc
+----> 2 from pcitpy.pcitpy import *
+
+~\Google Drive\pcitpy\pcitpy\pcitpy.py in <module>
+      6 # Cell
+      7 # hide
+----> 8 from .pcitpy import importance_sampler
+      9 from scipy.io import loadmat
+     10 import os
+
+ImportError: cannot import name 'importance_sampler' from partially initialized module 'pcitpy.pcitpy' (most likely due to a circular import) (C:\Users\gunnj\Google Drive\pcitpy\pcitpy\pcitpy.py)
+ImportError: cannot import name 'importance_sampler' from partially initialized module 'pcitpy.pcitpy' (most likely due to a circular import) (C:\Users\gunnj\Google Drive\pcitpy\pcitpy\pcitpy.py)
+An error occurred while executing the following cell:
+------------------
+from nbdev.showdoc import show_doc
+from pcitpy.pcitpy import *
+------------------
+```
+
+It's odd that the bug would start with `Miscellaneous_Helper_Functions` given that the notebook doesn't import pcitpy at all. What is the "cell" being referred to in the traceback? Quite a mystery. 
+
+Anyway, my hypothesis about the errors is that some of my notebooks with within-module dependencies simply must be isolated according to the original conventions of PCITpy. It's a bit awkward (a separate module for every MATLAB file?) but might be totally adequate for the situation.
+
+That seems to fix! And it has a decent semantics; I'd rather be able to import directly from PCIT though.
