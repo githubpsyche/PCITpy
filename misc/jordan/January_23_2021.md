@@ -19,12 +19,14 @@ So what will I do?
 Okay, let's get started. 
 
 I'll maintain a list of issues to eventually address:
-- Percent format for script-based notebooks
-- Overview notebook for helper subsection
-- Apparent circular dependencies depending on order of notebook scripts.
+- ~~Percent format for script-based notebooks~~
+- _Overview notebook for helper subsection_
+- ~~Apparent circular dependencies depending on order of notebook scripts.~~
 - No clear workflow for iterative improvements
 - A world of code to add or test once I have that set up.
+- Maybe simulate data actually comes first along with a discussion of the data format: a data preparation notebook.
 
+### Circular Dependencies Issue
 We have already renamed each file. Let's reset the various libraries and htmls, and see if I can pull off a `make`. 
 
 The error is reproduced for a few notebooks:
@@ -63,4 +65,21 @@ It's odd that the bug would start with `Miscellaneous_Helper_Functions` given th
 
 Anyway, my hypothesis about the errors is that some of my notebooks with within-module dependencies simply must be isolated according to the original conventions of PCITpy. It's a bit awkward (a separate module for every MATLAB file?) but might be totally adequate for the situation.
 
-That seems to fix! And it has a decent semantics; I'd rather be able to import directly from PCIT though.
+That seems to fix! And it has a decent semantics; I'd rather be able to import directly from PCIT though. Oh well.
+
+### Percent format for script-based notebooks
+Just a couple of jupytext commands and confirmation that the result works.
+
+### Overview notebook for helper subsection
+I'll put off documentation issues for later; for now I need to demonstrate progress on the translation. I can already show off how nbdev solves our documentation and packaging concerns layed out months ago.
+
+### No clear workflow for iterative improvements
+So I embraced the idea before that our work on tests for PCIT can be concentrated on tests for the main pipeline (Data Simulation -> Parameter Configuration -> Preprocessing -> Curve Fitting -> Results Analysis). If we can confirm that the pipeline produces the same outputs across all meaningfully different parameter configurations, then the entire toolbox is probably bug free. This in turn implies that development (and testing) can proceed line by line along this main pipeline. 
+
+A big thing I need to enforce is not discarding tests once passed; they need to persist as proof that the codebase is sound. When I have to refactor bits of the codebase to support testing, I can either make that refactoring a permanent feature of the codebase (and include them in their respective notebooks, as hidden or explicit code cells), or I can include supplementary material reporting my results. But in the end, I definitely need a notebook that outlines and reports the results of my testing scheme. 
+
+An odd feature of my testing framework is comparison with MATLAB outputs. Normally, I present my tests as demos in the documentation: they showcase the function while confirming it works. Adding MATLAB comparisons makes the documentation a running confirmation that the toolboxes are equivalent. I don't know if I really like that. These _can_ be hidden cells, but maybe I do want pages doing these MATLAB-based tests, even if they aren't the main testing framework. Maybe I can have a notebook that reports these tests too; it would also prove a helpful tutorial of that workflow. Okay.
+
+In the meantime, though, hidden cells in the same contexts as the functions' specifications.
+
+What do I do now? Start from notebook 0!
