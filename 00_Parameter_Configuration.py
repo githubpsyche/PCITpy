@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # hide
-# default_exp pcitpy
+# default_exp run_importance_sampler
 from nbdev.showdoc import *
 
 # # Parameter Configuration

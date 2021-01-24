@@ -1,5 +1,5 @@
 # hide
-# default_exp pcitpy
+# default_exp simulate_data
 from nbdev.showdoc import *
 
 # # Simulating Data

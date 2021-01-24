@@ -1,5 +1,5 @@
 # hide
-# default_exp pcitpy
+# default_exp importance_sampler
 from nbdev.showdoc import *
 
 # # Curve Fitting

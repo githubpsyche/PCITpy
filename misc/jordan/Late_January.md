@@ -13,3 +13,9 @@ So what will I do?
 
 ...No, that seems a bit dramatic. We'll put scripts back in the sequence that makes sense (though we will also keep track of function dependencies) and iteratively set them aside or otherwise revise until the circularity bug is gone.
 
+![](2021-01-23-06-17-57.png)
+
+# January 24
+Okay, let's get started. 
+
+We have already renamed each file. Let's reset the various libraries and htmls, and see if I can pull off a `make`. 
