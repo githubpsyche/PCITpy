@@ -31,7 +31,10 @@ nb_path: "00_Parameter_Configuration.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Here we review the requirements for and toolbox functions supporting the configuration of parameters for curve-fitting with P-CIT before execution of the core <a href="/pcitpy/Curve_Fitting.html#importance_sampler"><code>importance_sampler</code></a> procedure. Most language-agnostic guidance is recreated directly from the <a href="https://github.com/PrincetonUniversity/p-cit-toolbox">P-CIT Toolbox Manual</a> provided by Annamalai Natarajan, Samuel Gershman, Luis Piloto, Greg Detre, and Kenneth Norman with Princeton University.</p>
+<p>Here we review the requirements for and toolbox functions supporting the configuration of parameters for curve-fitting
+with P-CIT before execution of the core <a href="/pcitpy/Curve_Fitting.html#importance_sampler"><code>importance_sampler</code></a> procedure. Most language-agnostic guidance is recreated
+directly from the <a href="https://github.com/PrincetonUniversity/p-cit-toolbox">P-CIT Toolbox Manual</a> provided by Annamalai
+Natarajan, Samuel Gershman, Luis Piloto, Greg Detre, and Kenneth Norman with Princeton University.</p>
 
 </div>
 </div>
@@ -44,13 +47,17 @@ nb_path: "00_Parameter_Configuration.ipynb"
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The dimensionality of the data matrix that holds the information required for the analysis is $T \times 6$.
-$T$ here corresponds to the total number of entries (over all subjects, all items, all repetitions) that
-you would like analyzed. All entries in the data matrix will need to be numeric (exception-the
-predictor variable values can be set to NaN; see discussion of baseline items below). The 6 columns
-correspond to the <em>subject id</em>, <em>sample number</em>, <em>category</em>, <em>predictor variable</em>, <em>dependent variable</em> and <em>net effect cluster</em> respectively. Before we explain each of these columns in detail, let us look at an example data matrix. Table 1 in the P-CIT Toolbox Manual shows data entries from a variant of the think/no-think dataset. The entries in the table correspond to no-think and baseline items from two categories, face and scene. The predictor variable here is the difference between relevant-category and irrelevant-category classifier readouts. The voxels that were fed into the classifier were selected using a bilateral two-region (fusiform gyrus and parahippocampal gyrus) mask. In this variant of the dataset the
-classifier, was trained on four categories (face, scene, car, shoe) and tested on two categories (face,
-scene) only.</p>
+<p>The dimensionality of the data matrix that holds the information required for the analysis is $T \times 6$. $T$ here
+corresponds to the total number of entries (over all subjects, all items, all repetitions) that you would like
+analyzed. All entries in the data matrix will need to be numeric (exception-the predictor variable values can be set
+to NaN; see discussion of baseline items below). The 6 columns correspond to the <em>subject id</em>, <em>sample number</em>,
+<em>category</em>, <em>predictor variable</em>, <em>dependent variable</em> and <em>net effect cluster</em> respectively. Before we explain each
+of these columns in detail, let us look at an example data matrix. Table 1 in the P-CIT Toolbox Manual shows data
+entries from a variant of the think/no-think dataset. The entries in the table correspond to no-think and baseline
+items from two categories, face and scene. The predictor variable here is the difference between relevant-category and
+irrelevant-category classifier readouts. The voxels that were fed into the classifier were selected using a bilateral
+two-region (fusiform gyrus and parahippocampal gyrus) mask. In this variant of the dataset the classifier, was trained
+on four categories (face, scene, car, shoe) and tested on two categories (face, scene) only.</p>
 
 </div>
 </div>
@@ -58,20 +65,50 @@ scene) only.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
-<li><p><strong>Column 1</strong> -<em>subject id</em>: Within a data matrix, each subject should be assigned a unique subject ID. From the example data matrix you can see that subject IDs are the same for all entries within a subject.</p>
+<li><p><strong>Column 1</strong> -<em>subject id</em>: Within a data matrix, each subject should be assigned a unique subject ID. From the
+example data matrix you can see that subject IDs are the same for all entries within a subject.</p>
 </li>
-<li><p><strong>Column 2</strong> -<em>trial number</em>: The trial number must be unique within each subject but can be repeated across subjects. In the example data matrix, the trial numbers go from 1 through 106 for subject 1 before being repeated for subject 2.</p>
+<li><p><strong>Column 2</strong> -<em>trial number</em>: The trial number must be unique within each subject but can be repeated across
+subjects. In the example data matrix, the trial numbers go from 1 through 106 for subject 1 before being repeated
+for subject 2.</p>
 </li>
-<li><p><strong>Column 3</strong> -<em>category</em>: Category numbers can be used to represent different conditions within the experiment. The curve-fitting procedure can fit a curve to just one category if need be. If this is irrelevant to your dataset, just set it to -1. From the example data matrix the entries are divided up into to either category 1 (face trials) or category 2 (scene trials).</p>
+<li><p><strong>Column 3</strong> -<em>category</em>: Category numbers can be used to represent different conditions within the experiment. The
+curve-fitting procedure can fit a curve to just one category if need be. If this is irrelevant to your dataset, just
+set it to -1. From the example data matrix the entries are divided up into to either category 1 (face trials) or
+category 2 (scene trials).</p>
 </li>
-<li><p><strong>Column 4</strong> -<em>predictor variable</em>: This column should be populated with predictor variable data from your experiments (e.g., classifier outputs, reaction times - whatever information it is that you are using to predict the dependent variable). In the example data matrix, we are using the difference between relevant-category and irrelevant-category classifier readouts as our predictor variable. Also, note some entries (trial numbers 105, 106) in the example data matrix are NaNs. These entries correspond to the baseline items, where no predictor variable information is available (see the "Computing importance weights for individual curves" section of the main paper, and the "Anchoring the vertical position of the curve using baseline items" section of the supplementary materials). When computing the net effects these baseline items, by default, have their net effects set to zero.</p>
+<li><p><strong>Column 4</strong> -<em>predictor variable</em>: This column should be populated with predictor variable data from your
+experiments (e.g., classifier outputs, reaction times - whatever information it is that you are using to predict the
+dependent variable). In the example data matrix, we are using the difference between relevant-category and
+irrelevant-category classifier readouts as our predictor variable. Also, note some entries (trial numbers 105, 106)
+in the example data matrix are NaNs. These entries correspond to the baseline items, where no predictor variable
+information is available (see the "Computing importance weights for individual curves" section of the main paper,
+and the "Anchoring the vertical position of the curve using baseline items" section of the supplementary materials).
+When computing the net effects these baseline items, by default, have their net effects set to zero.</p>
 </li>
-<li><p><strong>Column 5</strong> -<em>dependent variable</em>: You can populate this column with dependent variable data from your experiments. In the example data matrix, the dependent variable is Bernoulli distributed (i.e., 0 or 1). The toolbox is equipped to handle normally distributed continuous dependent variables as well; refer to Section 6.3 of the Manual.</p>
+<li><p><strong>Column 5</strong> -<em>dependent variable</em>: You can populate this column with dependent variable data from your experiments.
+In the example data matrix, the dependent variable is Bernoulli distributed (i.e., 0 or 1). The toolbox is equipped
+to handle normally distributed continuous dependent variables as well; refer to Section 6.3 of the Manual.</p>
 </li>
-<li><p><strong>Column 6</strong> -<em>net effect cluster</em> : This tells the toolbox which trials to group together when computing net effects. In the think/no-think experiment, all 12 repetitions of a given no-think item are grouped within the same net effect cluster. Note that, for all trials within a given net effect cluster, the predictor variable values can be different across these trials, but they all must share the same dependent variable value (e.g., in the think/no-think experiment, each repetition of a given no-think item was associated with a different level of classifier evidence, but all of these repetitions were associated with same dependent variable value - the item was either remembered correctly or incorrectly on the final test). Each net effect cluster should have its own unique identifier value (e.g., in the think/no-think dataset, all of the repetitions of the first no-think item from the first participant were assigned a net effect cluster value of 1; all of the repetitions of the second no-think item from the first participant were assigned a net effect cluster value of 2; and so on). Note also that the trials belonging to a given net effect cluster do not need to be contiguous to one another in the matrix (see Table 1 in the P-CIT Toolbox Manual).</p>
+<li><p><strong>Column 6</strong> -<em>net effect cluster</em> : This tells the toolbox which trials to group together when computing net
+effects. In the think/no-think experiment, all 12 repetitions of a given no-think item are grouped within the same
+net effect cluster. Note that, for all trials within a given net effect cluster, the predictor variable values can
+be different across these trials, but they all must share the same dependent variable value (e.g., in the
+think/no-think experiment, each repetition of a given no-think item was associated with a different level of
+classifier evidence, but all of these repetitions were associated with same dependent variable value - the item was
+either remembered correctly or incorrectly on the final test). Each net effect cluster should have its own unique
+identifier value (e.g., in the think/no-think dataset, all of the repetitions of the first no-think item from the
+first participant were assigned a net effect cluster value of 1; all of the repetitions of the second no-think item
+from the first participant were assigned a net effect cluster value of 2; and so on). Note also that the trials
+belonging to a given net effect cluster do not need to be contiguous to one another in the matrix (see Table 1 in
+the P-CIT Toolbox Manual).</p>
 </li>
 </ul>
-<p>Table 1 in the P-CIT Toolbox Manual depicts a variant of the think/no-think analysis in which 8 no-think items were repeated 12 times and 10 baseline items were assigned one row each; this brings the total number of rows per subject to 106 (8 x 12 + 10 x 1). In the think/no-think paper, authors analyzed data from a total of 26 subjects, hence the total number of rows in the data matrix for this variant of the think/no-think analysis is 2756. They discuss other variants of the think/no-think analysis in Section 4.12 of the Manual.</p>
+<p>Table 1 in the P-CIT Toolbox Manual depicts a variant of the think/no-think analysis in which 8 no-think items were
+repeated 12 times and 10 baseline items were assigned one row each; this brings the total number of rows per subject
+to 106 (8 x 12 + 10 x 1). In the think/no-think paper, authors analyzed data from a total of 26 subjects, hence the
+total number of rows in the data matrix for this variant of the think/no-think analysis is 2756. They discuss other
+variants of the think/no-think analysis in Section 4.12 of the Manual.</p>
 
 </div>
 </div>
@@ -89,19 +126,16 @@ scene) only.</p>
 <div class="output_markdown rendered_html output_subarea ">
 <h2 id="run_importance_sampler" class="doc_header"><code>run_importance_sampler</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/run_importance_sampler.py#L12" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>run_importance_sampler</code>(<strong><code>analysis_settings</code></strong>=<em><code>None</code></em>, <strong><code>run_sampler</code></strong>=<em><code>True</code></em>)</p>
 </blockquote>
-<p>Sets up the data matrix (number of samples x 6 columns) and the
-<code>analysis_settings</code> dictionary with algorithm parameters before starting
-the importance sampler.</p>
-<p>This is the driver routine that you will use to load your data matrix and
-also set parameters for the curve-fitting procedure. Running the function
-will initialize the parameters and initiate the core <a href="/pcitpy/Curve_Fitting.html#importance_sampler"><code>importance_sampler</code></a>
-function of the toolbox.</p>
+<p>Sets up the data matrix (number of samples x 6 columns) and the <code>analysis_settings</code> dictionary with algorithm
+parameters then (by default) starts the importance sampler routine.</p>
+<p>This is the driver routine that you will use to load your data matrix and also set parameters for the curve-fitting
+procedure. Running the function will initialize the parameters and initiate the core <a href="/pcitpy/Curve_Fitting.html#importance_sampler"><code>importance_sampler</code></a> function
+of the toolbox.</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
-<li>analysis_settings: optional parameter configuration as dictionary.
-  Default parameters will be used otherwise.</li>
-<li>run_sampler: if True, runs importance_sampler using specified settings.
-  Otherwise returns loaded data matrix and analysis_settings dictionary.</li>
+<li>analysis_settings: optional parameter configuration as dictionary. Default parameters will be used otherwise.</li>
+<li>run_sampler: if True, runs importance_sampler using specified settings. Otherwise returns loaded data matrix and
+  analysis_settings dictionary.</li>
 </ul>
 
 </div>
@@ -116,28 +150,17 @@ function of the toolbox.</p>
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In its original implementation in MATLAB, as opposed to accepting any 
-input parameter configuration, parameters were specified within 
-<a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a> by altering variable assignments in its code. For 
-a similar workflow, you could configure your own copy of the function 
-(click "source" above to locate the current implementation) to specify 
-parameters and run the function. Alternatively, you can provide an 
-<code>analysis_settings</code> dictionary object as an argument to 
-<a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a>, specifying parameters as a set of key-value 
-pairs.</p>
-<p>Refer to Table 2 in the P-CIT Toolbox Manual for parameters, description, 
-example usage and default settings. All these parameters are initialized 
-in <a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a>. The default settings correspond to the 
-settings that were used to do curve-fitting on scene, no-think trials in 
-the Detre et al. paper. Settings related to bootstrap and scramble 
-analyses are explained in more detail in Sections 4.8 and 4.9 
-respectively of the P-CIT Toolbox Manual.</p>
-<h2 id="Testing">Testing<a class="anchor-link" href="#Testing"> </a></h2><p><a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a> is designed to be modified to specify P-CIT parameters before
-execution. We produce customized version of the function (<code>eval_run_importance_sampler</code>) that alters where data is
-sourced from into <code>data/test/test.m</code></p>
-<p>Furthermore, to test implementation equivalence, we also prevent the function from calling <a href="/pcitpy/Curve_Fitting.html#importance_sampler"><code>importance_sampler</code></a> in its
-last line, and instead return its main products <code>raw_data</code> and <code>analysis_settings</code> for comparison between MATLAB and
-Python implementations.</p>
+<p>Refer to Table 2 in the P-CIT Toolbox Manual for parameters, description, example usage and default settings. All
+these parameters are initialized in <a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a>. The default settings correspond to the settings that
+were used to do curve-fitting on scene, no-think trials in the Detre et al. paper. Settings related to bootstrap and
+scramble analyses are explained in more detail in Sections 4.8 and 4.9 respectively of the P-CIT Toolbox Manual.</p>
+<p>In its original implementation in MATLAB, as opposed to accepting any input parameter configuration, parameters were
+specified within <a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a> by altering variable assignments in its code. For a similar workflow, you
+could configure your own copy of the function (click "source" above to locate the current implementation) to specify
+parameters and run the function. Alternatively, you can provide an <code>analysis_settings</code> dictionary object as an
+argument to <a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a>, specifying parameters as a set of key-value pairs.</p>
+<p>Below we further illustrate a basic example of parameter configuration using the <a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a> module in
+PCITpy.</p>
 
 </div>
 </div>
@@ -149,75 +172,67 @@ Python implementations.</p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">eval_run_importance_sampler</span><span class="p">():</span>
-    <span class="c1"># Populating the analysis_settings struct with algorithm settings</span>
-    <span class="n">analysis_settings</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;analysis_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>  <span class="c1"># analysis_id: specifies the target directory</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;em_iterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Number of expectation maximization iterations</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100000</span>  <span class="c1"># Number of particles to be used in the importance sampling algorithm</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;horz_indpnt&#39;</span>  <span class="c1"># Name of family of curves to be used. Refer to family_of_curves</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">analysis_settings</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;working_dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;data&#39;</span> <span class="c1"># specifies the root subdirectory to find data and store results</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;analysis_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>  <span class="c1"># specifies the target directory</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;em_iterations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># # expectation maximization iterations</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100000</span>  <span class="c1"># # particles used in sampling</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;horz_indpnt&#39;</span>  <span class="c1"># family of curves to be used</span>
 
-    <span class="c1"># Name of the distribution (and the default canonical link function which maps the predictor variable to the DV)</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;distribution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bernoulli&#39;</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># For normal distribution the additional parameter is sigma</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">][</span><span class="s1">&#39;sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># Name of the distribution (and the default canonical link function which maps </span>
+<span class="c1"># the predictor variable to the DV)</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;distribution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bernoulli&#39;</span>
 
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;beta_0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Initializing beta_0 for linear predictor</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;beta_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Initializing beta_1 for linear predictor</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;tau&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># Specifies the radius to sample curves in the curve space</span>
+<span class="c1"># Can contain several params; </span>
+<span class="c1"># for normal distribution the additional parameter is sigma</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">][</span><span class="s1">&#39;sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
-    <span class="c1"># Specifies if the analyses will need to run on a specific category. Vector length should be greater than 0.</span>
-    <span class="c1"># For instance [2] will cause the analyses to be run only on the second category</span>
-    <span class="c1"># [] will run the analyses on all categories</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;beta_0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Initializing beta_0 for linear predictor</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;beta_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Initializing beta_1 for linear predictor</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;tau&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># Picks radius to sample curves in curve space</span>
 
-    <span class="c1"># specifies how many std dev away from group mean will the predictor variable outliers need to be dropped</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;drop_outliers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="c1"># Specifies if the analyses will need to run on a specific category. Vector </span>
+<span class="c1"># length should be greater than 0. For instance [2] will cause the analyses to </span>
+<span class="c1"># be run only on the second category [] will run the analyses on all categories</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="c1"># if TRUE, the independent variables will be z-scored within each subject</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;zscore_within_subjects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># specifies how many std dev away from group mean will the predictor variable </span>
+<span class="c1"># outliers need to be dropped</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;drop_outliers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
 
-    <span class="c1"># Registering which column in the data matrix is carrying which piece of information</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;subject_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;trials&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;predictor_var&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;dependent_var&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># if TRUE, the independent variables will be z-scored within each subject</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;zscore_within_subjects&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># Denotes the resolution in which the data will be processed</span>
+<span class="c1"># Registering which column in data matrix carries which piece of information</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;subject_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;trials&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;predictor_var&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;dependent_var&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">][</span><span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
 
-    <span class="c1"># Denotes the number of chunks you plan to partition the trials x particles matrix.</span>
-    <span class="c1"># An example chunk size will be 2 for a 3000 x 50,000 matrix</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;particle_chunks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;bootstrap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># indicates that this run is a bootstrap run</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;bootstrap_run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># if non-negative, specify bootstrap sample number unique for each sample</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># resolution in which data is processed</span>
 
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># indicates whether this run is a scramble run</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># if non-negative, specify bootstrap sample number unique for each sample</span>
-    <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># choosing the appropriate scramble option from three options below</span>
-    <span class="k">if</span> <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;within_subjects_within_categories&#39;</span>
-        <span class="k">elif</span> <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;within_subjects_across_categories&#39;</span>
-        <span class="k">elif</span> <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;across_subjects_across_categories&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid scramble style given!&#39;</span><span class="p">)</span>
+<span class="c1"># Number of chunks you plan to partition the trials x particles matrix.</span>
+<span class="c1"># An example chunk size will be 2 for a 3000 x 50,000 matrix</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;particle_chunks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;bootstrap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># indicates this run is a bootstrap run</span>
 
-    <span class="c1"># %%%%%%%%%%%%%%%%%%%%</span>
-    <span class="c1"># Reading in the data</span>
-    <span class="c1"># %%%%%%%%%%%%%%%%%%%%</span>
-    <span class="c1"># The lines below load the simulated data into the raw_data matrix.</span>
-    <span class="c1"># Replace these lines of the code with code to load your actual data</span>
+<span class="c1"># if non-negative, specify bootstrap sample number unique for each sample</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;bootstrap_run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  
 
-    <span class="n">results_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;../data&#39;</span><span class="p">)</span>
-    <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;analysis_id&#39;</span><span class="p">],</span>
-                             <span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;analysis_id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.mat&#39;</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">data_path</span><span class="p">)[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">analysis_settings</span>
+ <span class="c1"># indicates whether this run is a scramble run</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span> 
+
+<span class="c1"># if non-negative, specify bootstrap sample number unique for each sample</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  
+
+<span class="c1"># choosing the appropriate scramble option, leaving at -1 where inapplicable</span>
+<span class="n">analysis_settings</span><span class="p">[</span><span class="s1">&#39;scramble_style&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  
+
+<span class="n">run_importance_sampler</span><span class="p">(</span><span class="n">analysis_settings</span><span class="p">,</span> <span class="n">run_sampler</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -227,43 +242,53 @@ Python implementations.</p>
 </div>
     {% endraw %}
 
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">test_run_importance_sampler</span><span class="p">():</span>
-    <span class="c1"># numpy</span>
-    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-    <span class="c1"># package enabling access/control of matlab from python</span>
-    <span class="kn">import</span> <span class="nn">matlab.engine</span>
-
-    <span class="c1"># matlab instance with relevant paths</span>
-    <span class="n">eng</span> <span class="o">=</span> <span class="n">matlab</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">start_matlab</span><span class="p">()</span>
-
-    <span class="c1"># paths to matlab helper and model functions</span>
-    <span class="n">eng</span><span class="o">.</span><span class="n">addpath</span><span class="p">(</span><span class="s1">&#39;../original&#39;</span><span class="p">)</span>
-
-    <span class="c1"># generate output</span>
-    <span class="n">python_data</span><span class="p">,</span> <span class="n">python_analysis_settings</span> <span class="o">=</span> <span class="n">eval_run_importance_sampler</span><span class="p">()</span>
-    <span class="n">matlab_data</span><span class="p">,</span> <span class="n">matlab_analysis_settings</span> <span class="o">=</span> <span class="n">eng</span><span class="o">.</span><span class="n">eval_run_importance_sampler</span><span class="p">(</span><span class="n">nargout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">matlab_data</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">python_data</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;key python_value matlab_value&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">python_analysis_settings</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">python_analysis_settings</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">matlab_analysis_settings</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Which returns prepared <code>data</code> and <code>analysis_settings</code> objects for use as arguments into the importance_sampler module:</p>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">array</span><span class="p">([[</span> <span class="mf">1.00000000e+00</span><span class="p">,</span>  <span class="mf">2.00000000e+00</span><span class="p">,</span>  <span class="mf">1.00000000e+00</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.22396667e-01</span><span class="p">,</span>  <span class="mf">3.30000000e-01</span><span class="p">,</span>  <span class="mf">1.00000000e+00</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mf">1.00000000e+00</span><span class="p">,</span>  <span class="mf">2.00000000e+00</span><span class="p">,</span>  <span class="mf">1.00000000e+00</span><span class="p">,</span>
+          <span class="mf">1.15218333e-01</span><span class="p">,</span>  <span class="mf">3.30000000e-01</span><span class="p">,</span>  <span class="mf">1.00000000e+00</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mf">1.00000000e+00</span><span class="p">,</span>  <span class="mf">2.00000000e+00</span><span class="p">,</span>  <span class="mf">2.00000000e+00</span><span class="p">,</span>
+         <span class="o">-</span><span class="mf">2.38743333e-01</span><span class="p">,</span>  <span class="mf">3.30000000e-01</span><span class="p">,</span>  <span class="mf">2.00000000e+00</span><span class="p">],</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="p">[</span> <span class="mf">1.90000000e+01</span><span class="p">,</span>  <span class="mf">1.00000000e+00</span><span class="p">,</span>  <span class="mf">9.50000000e+01</span><span class="p">,</span>
+          <span class="mf">5.06813333e-01</span><span class="p">,</span>  <span class="mf">3.30000000e-01</span><span class="p">,</span>  <span class="mf">1.82300000e+03</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mf">1.90000000e+01</span><span class="p">,</span>  <span class="mf">1.00000000e+00</span><span class="p">,</span>  <span class="mf">9.60000000e+01</span><span class="p">,</span>
+          <span class="mf">4.38161333e-01</span><span class="p">,</span>  <span class="mf">6.60000000e-01</span><span class="p">,</span>  <span class="mf">1.82400000e+03</span><span class="p">],</span>
+        <span class="p">[</span> <span class="mf">1.90000000e+01</span><span class="p">,</span>  <span class="mf">1.00000000e+00</span><span class="p">,</span>  <span class="mf">9.60000000e+01</span><span class="p">,</span>
+          <span class="mf">5.52588333e-01</span><span class="p">,</span>  <span class="mf">6.60000000e-01</span><span class="p">,</span>  <span class="mf">1.82400000e+03</span><span class="p">]]),</span>
+ <span class="p">{</span><span class="s1">&#39;working_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;analysis_id&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;em_iterations&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="s1">&#39;particles&#39;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span>
+  <span class="s1">&#39;curve_type&#39;</span><span class="p">:</span> <span class="s1">&#39;horz_indpnt&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;distribution&#39;</span><span class="p">:</span> <span class="s1">&#39;bernoulli&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;dist_specific_params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+  <span class="s1">&#39;beta_0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s1">&#39;beta_1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s1">&#39;tau&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+  <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s1">&#39;drop_outliers&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="s1">&#39;zscore_within_subjects&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+  <span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;subject_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+   <span class="s1">&#39;trials&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+   <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+   <span class="s1">&#39;predictor_var&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+   <span class="s1">&#39;dependent_var&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+   <span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+  <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+  <span class="s1">&#39;particle_chunks&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="s1">&#39;bootstrap&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+  <span class="s1">&#39;bootstrap_run&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+  <span class="s1">&#39;scramble&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+  <span class="s1">&#39;scramble_run&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+  <span class="s1">&#39;scramble_style&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span>
 </pre></div>
 
-    </div>
 </div>
 </div>
-
 </div>
-    {% endraw %}
-
 </div>
  
 
