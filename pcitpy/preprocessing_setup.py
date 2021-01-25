@@ -407,11 +407,10 @@ def preprocessing_setup(data, analysis_settings):
 
     # Depending on the number of particle chunks we get start, end points and the number of particles within each chunk.
     # For instance 1000 particles divided into 4 chunks will look like,
-    # 0	250	250
-    # 250	500	250
-    # 500	750	250
-    # 750	1000	250
-
+    # | 0   | 250 | 250
+    # | 250	| 500 | 250
+    # | 500 | 750 | 250
+    # | 750 | 1000| 250
     dummy = np.arange(0, analysis_settings['particles'],
                       analysis_settings['particles'] / analysis_settings['particle_chunks'])
     analysis_settings['ptl_chunk_idx'] = np.stack(

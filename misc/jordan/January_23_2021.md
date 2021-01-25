@@ -26,9 +26,9 @@ I'll maintain a list of issues to eventually address:
 - ~~Percent format for script-based notebooks~~
 - _Overview notebook for helper subsection_
 - ~~Apparent circular dependencies depending on order of notebook scripts.~~
-- No clear workflow for iterative improvements
+- ~~No clear workflow for iterative improvements~~
 - A world of code to add or test once I have that set up.
-- Maybe simulate data actually comes first along with a discussion of the data format: a data preparation notebook.
+- _Maybe simulate data actually comes first along with a discussion of the data format: a data preparation notebook._
 
 ### Circular Dependencies Issue
 We have already renamed each file. Let's reset the various libraries and htmls, and see if I can pull off a `make`. 
@@ -113,3 +113,18 @@ We can directly use the structure in run_importance_sampler. Useful in docs for 
 meaningfulness of each parameter.
 
 ## preprocessing_setup
+It should accept `analysis_settings` and `data` and return preprocessed versions. Not super interesting; I'll test it
+within Curve_Fitting.
+
+## Curve Fitting!
+I'm interested in making the most of the `cache` magic here. But technically I'm working with scripts. It doesn't look
+like the linter/syntax highlighter complains when I use notebook magics; indeed it seems to have a special highlighting
+just for it.
+
+During development, `importance_sampler` is refactored into a sequence of notebook cells, with a unique cell for each
+`em_iteration`. The IPython cell magic `%%cache%% is used to cache results and outputs of each unit of the subdivided
+function, easing the task of translating and testing a function that takes a long time to run. Rather than having to
+repeatedly run these computations, I can just cache and execute them only once. 
+
+Once the final cell returns output that matches what MATLAB gives, I'll worry about optimization, and eventually
+re-refactor the finished code into a packageable function.

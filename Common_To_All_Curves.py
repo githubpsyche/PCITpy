@@ -116,7 +116,7 @@ show_doc(initial_sampling, title_level=2)
 # %%
 # export
 # hide
-def check_if_exceed_bound(curve_type, params):
+def check_if_exceed_bounds(curve_type, params):
     """If a curve parameter is found to exceeding bounds then it is set to the 
     bounds. For example, if a vertical parameter is -1.02 then it is set to -1 
     since -1 is the lower bound for vertical parameters.
@@ -127,9 +127,6 @@ def check_if_exceed_bound(curve_type, params):
     
     **Returns** the modified data matrix.
     """
-    
-    if len(varargin) < 1:
-        raise ValueError('Missing input parameters in {} computation!'.format(get_info))
 
     nParams = family_of_curves(curve_type, 'get_nParams')
     if (params.size == 0) or (np.shape(params)[1] != nParams):
@@ -148,7 +145,7 @@ def check_if_exceed_bound(curve_type, params):
 
 
 # %%
-show_doc(check_if_exceed_bound, title_level=2)
+show_doc(check_if_exceed_bounds, title_level=2)
 
 
 # %%

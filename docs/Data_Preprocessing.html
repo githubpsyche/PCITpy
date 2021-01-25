@@ -31,9 +31,15 @@ nb_path: "01_Data_Preprocessing.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Missing and/or incorrect parameters initialized in <a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a> are reset in <a href="/pcitpy/Data_Preprocessing.html#preprocessing_setup"><code>preprocessing_setup</code></a>. <a href="/pcitpy/Data_Preprocessing.html#preprocessing_setup"><code>preprocessing_setup</code></a> also preprocesses data based on the specified parameter configuration. From the parameter settings in Table 2 of the P-CIT Toolbox Manual, we see that the predictor variable can be z-scored and outliers can be dropped. We also can generate bootstrap data, scramble the dependent variable, scale the predictor variable between 0 and 1 (this is a mandatory step), and we can perform the analysis on one or more categories while leaving out data from irrelevant categories. Trials where the predictor variable is set to NaN are filtered out (rows removed) for purposes of z-scoring, dropping outliers and scaling. These filtered rows are appended to the data matrix following those pre-processing steps. For,</p>
-<p><strong>Simple data</strong> analysis (includes both think/no-think and simulated data) the order of pre-processing
-is:</p>
+<p>Missing and/or incorrect parameters initialized in <a href="/pcitpy/Parameter_Configuration.html#run_importance_sampler"><code>run_importance_sampler</code></a> are reset in <a href="/pcitpy/Data_Preprocessing.html#preprocessing_setup"><code>preprocessing_setup</code></a>.
+<a href="/pcitpy/Data_Preprocessing.html#preprocessing_setup"><code>preprocessing_setup</code></a> also preprocesses data based on the specified parameter configuration. From the parameter
+settings in Table 2 of the P-CIT Toolbox Manual, we see that the predictor variable can be z-scored and outliers can
+be dropped. We also can generate bootstrap data, scramble the dependent variable, scale the predictor variable between
+0 and 1 (this is a mandatory step), and we can perform the analysis on one or more categories while leaving out data
+from irrelevant categories. Trials where the predictor variable is set to NaN are filtered out (rows removed) for
+purposes of z-scoring, dropping outliers and scaling. These filtered rows are appended to the data matrix following
+those pre-processing steps. For,</p>
+<p><strong>Simple data</strong> analysis (includes both think/no-think and simulated data) the order of pre-processing is:</p>
 <ol>
 <li>Filter out irrelevant category data entries (rows) from the data matrix</li>
 <li>Drop outliers in the predictor variable, if drop outliers &gt; 0</li>
@@ -42,7 +48,8 @@ is:</p>
 </ol>
 <p><strong>Bootstrap data</strong> analysis the order of pre-processing is:</p>
 <ol>
-<li>Generate bootstrap data from the original data matrix (see the "Nonparametric statistical tests" section of the main paper, and Section 4.8 of the Manual).</li>
+<li>Generate bootstrap data from the original data matrix (see the "Nonparametric statistical tests" section of the
+main paper, and Section 4.8 of the Manual).</li>
 <li>Filter out irrelevant category data entries (rows) from the data matrix</li>
 <li>Drop outliers in the predictor variable, if drop outliers &gt; 0</li>
 <li>Z-score predictor-variable data within subjects, if zscore within subjects = TRUE</li>
@@ -54,7 +61,8 @@ is:</p>
 <li>Drop outliers in the predictor variable, if drop outliers &gt; 0</li>
 <li>Z-score predictor-variable data within subjects, if zscore within subjects = TRUE</li>
 <li>Scale predictor variable between 0 and 1</li>
-<li>Scramble the dependent variable depending on the scrambling technique (see the "Nonparametric statistical tests" section of the main paper, and Section 4.8 of the Manual).</li>
+<li>Scramble the dependent variable depending on the scrambling technique (see the "Nonparametric statistical tests"
+section of the main paper, and Section 4.8 of the Manual).</li>
 </ol>
 
 </div>
@@ -142,7 +150,7 @@ at start of execution, making manual execution of <a href="/pcitpy/Data_Preproce
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="scramble_dependent_variable" class="doc_header"><code>scramble_dependent_variable</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/preprocessing_setup.py#L437" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>scramble_dependent_variable</code>(<strong><code>target_dependent_variables</code></strong>, <strong><code>target_net_effect_clusters</code></strong>, <strong><code>testing</code></strong>=<em><code>False</code></em>)</p>
+<h2 id="scramble_dependent_variable" class="doc_header"><code>scramble_dependent_variable</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/preprocessing_setup.py#L436" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>scramble_dependent_variable</code>(<strong><code>target_dependent_variables</code></strong>, <strong><code>target_net_effect_clusters</code></strong>, <strong><code>testing</code></strong>=<em><code>False</code></em>)</p>
 </blockquote>
 <p>Takes dependent variable vector and scramble it such that the net effect cluster groupings are NOT violated.</p>
 <p><strong>Arguments</strong>:</p>
@@ -164,7 +172,8 @@ at start of execution, making manual execution of <a href="/pcitpy/Data_Preproce
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>While <a href="/pcitpy/Data_Preprocessing.html#preprocessing_setup"><code>preprocessing_setup</code></a> is hard to demonstrate in isolation, its helper function <a href="/pcitpy/Data_Preprocessing.html#scramble_dependent_variable"><code>scramble_dependent_variable</code></a> is straightforward to illustrate:</p>
+<p>While <a href="/pcitpy/Data_Preprocessing.html#preprocessing_setup"><code>preprocessing_setup</code></a> is hard to demonstrate in isolation, its helper function <a href="/pcitpy/Data_Preprocessing.html#scramble_dependent_variable"><code>scramble_dependent_variable</code></a> is
+straightforward to illustrate:</p>
 
 </div>
 </div>

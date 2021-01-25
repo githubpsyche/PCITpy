@@ -121,7 +121,7 @@ subfunctions based on specified arguments.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="check_if_exceed_bound" class="doc_header"><code>check_if_exceed_bound</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L106" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>check_if_exceed_bound</code>(<strong><code>curve_type</code></strong>, <strong><code>params</code></strong>)</p>
+<h2 id="check_if_exceed_bounds" class="doc_header"><code>check_if_exceed_bounds</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L106" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>check_if_exceed_bounds</code>(<strong><code>curve_type</code></strong>, <strong><code>params</code></strong>)</p>
 </blockquote>
 <p>If a curve parameter is found to exceeding bounds then it is set to the
 bounds. For example, if a vertical parameter is -1.02 then it is set to -1
@@ -154,7 +154,7 @@ since -1 is the lower bound for vertical parameters.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="curve_volumes" class="doc_header"><code>curve_volumes</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L138" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>curve_volumes</code>(<strong><code>curve_type</code></strong>, <strong><code>resolution</code></strong>)</p>
+<h2 id="curve_volumes" class="doc_header"><code>curve_volumes</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L135" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>curve_volumes</code>(<strong><code>curve_type</code></strong>, <strong><code>resolution</code></strong>)</p>
 </blockquote>
 <p>Applies Lebesgue measure to compute curve volume over Euclidean space
 for arbitrary dimensionality based on associated bounds.</p>
@@ -180,7 +180,7 @@ for arbitrary dimensionality based on associated bounds.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="flip_vertical_params" class="doc_header"><code>flip_vertical_params</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L158" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>flip_vertical_params</code>(<strong><code>curve_type</code></strong>, <strong><code>input_params</code></strong>)</p>
+<h2 id="flip_vertical_params" class="doc_header"><code>flip_vertical_params</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L155" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>flip_vertical_params</code>(<strong><code>curve_type</code></strong>, <strong><code>input_params</code></strong>)</p>
 </blockquote>
 <p>Flipping vertical parameters of the curve.
 If a y1 = -0.4, flipping it will result in 0.4.</p>
@@ -206,7 +206,7 @@ If a y1 = -0.4, flipping it will result in 0.4.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="sort_horizontal_params" class="doc_header"><code>sort_horizontal_params</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L177" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>sort_horizontal_params</code>(<strong><code>curve_type</code></strong>, <strong><code>input_params</code></strong>)</p>
+<h2 id="sort_horizontal_params" class="doc_header"><code>sort_horizontal_params</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L174" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>sort_horizontal_params</code>(<strong><code>curve_type</code></strong>, <strong><code>input_params</code></strong>)</p>
 </blockquote>
 <p>Ensures that x1 &lt;= x2, especially for the horz_indpnt family of curves</p>
 
@@ -231,7 +231,7 @@ If a y1 = -0.4, flipping it will result in 0.4.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="draw_bcm_curve" class="doc_header"><code>draw_bcm_curve</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L202" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>draw_bcm_curve</code>(<strong><code>curve_type</code></strong>, <strong><code>input_params</code></strong>, <strong><code>resolution</code></strong>)</p>
+<h2 id="draw_bcm_curve" class="doc_header"><code>draw_bcm_curve</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L199" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>draw_bcm_curve</code>(<strong><code>curve_type</code></strong>, <strong><code>input_params</code></strong>, <strong><code>resolution</code></strong>)</p>
 </blockquote>
 <p>Draws a BCM curve for you.</p>
 <p>If you passed in the <code>input_params</code> as <code>con</code> then it randomly draws a
@@ -260,7 +260,7 @@ draws a curve directly rather then randomly generating one for you.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="auto_generate" class="doc_header"><code>auto_generate</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L238" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>auto_generate</code>(<strong><code>curve_type</code></strong>, <strong><code>input_params</code></strong>, <strong><code>resolution</code></strong>)</p>
+<h2 id="auto_generate" class="doc_header"><code>auto_generate</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L235" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>auto_generate</code>(<strong><code>curve_type</code></strong>, <strong><code>input_params</code></strong>, <strong><code>resolution</code></strong>)</p>
 </blockquote>
 <p>Generate 100 curves and randomly pick a theory consistent or
 inconsistent curve depending on the request.</p>
@@ -288,7 +288,7 @@ theory consistent curve; <code>inc</code> - theory inconsistent curve.</p>
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="weighted_curve" class="doc_header"><code>weighted_curve</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L290" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>weighted_curve</code>(<strong><code>curve_type</code></strong>)</p>
+<h2 id="weighted_curve" class="doc_header"><code>weighted_curve</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/common_to_all_curves.py#L287" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>weighted_curve</code>(<strong><code>curve_type</code></strong>)</p>
 </blockquote>
 <p>Not supported yet.</p>
 

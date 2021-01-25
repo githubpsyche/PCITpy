@@ -37,6 +37,500 @@ main paper and the "curve-fitting algorithm details" section of the supplementar
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Ongoing-Development-Workflow">Ongoing Development Workflow<a class="anchor-link" href="#Ongoing-Development-Workflow"> </a></h2><p>This core function of PCITpy is still a work in progress!</p>
+<p>During development, <a href="/pcitpy/Curve_Fitting.html#importance_sampler"><code>importance_sampler</code></a> is refactored into a sequence of notebook cells, with a unique cell for each
+<code>em_iteration</code>. The IPython cell magic <code>%store</code> is used to cache results and outputs of each unit of the subdivided
+function, easing the task of translating and testing a function that takes a long time to run. Rather than having to
+repeatedly run these computations, I can just cache and execute them only once.</p>
+<p>Once the final cell returns output that matches what MATLAB gives, I'll worry about optimization, and eventually
+re-refactor the finished code into a packageable function. With the docstring:</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Cache-Reinitialization">Cache Reinitialization<a class="anchor-link" href="#Cache-Reinitialization"> </a></h2><p>Here we re-load all the variables relevant to ongoing development so far.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">var_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ana_opt&quot;</span><span class="p">,</span> <span class="s2">&quot;bounds&quot;</span><span class="p">,</span> <span class="s2">&quot;exp_max_f_values&quot;</span><span class="p">,</span> <span class="s2">&quot;hold_betas&quot;</span><span class="p">,</span> <span class="s2">&quot;hold_betas_per_iter&quot;</span><span class="p">,</span> <span class="s2">&quot;importance_sampler&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nParam&quot;</span><span class="p">,</span> <span class="s2">&quot;normalized_w&quot;</span><span class="p">,</span> <span class="s2">&quot;preprocessed_data&quot;</span><span class="p">,</span> <span class="s2">&quot;tau&quot;</span><span class="p">,</span> <span class="s2">&quot;seed&quot;</span><span class="p">,</span> <span class="s2">&quot;net_effects&quot;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+    <span class="c1">#%store -r $var</span>
+    <span class="k">pass</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Function-Inputs">Function Inputs<a class="anchor-link" href="#Function-Inputs"> </a></h2><p>We'll grab and define the variables that usually work as the inputs into <a href="/pcitpy/Curve_Fitting.html#importance_sampler"><code>importance_sampler</code></a></p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pcitpy.run_importance_sampler</span> <span class="kn">import</span> <span class="n">run_importance_sampler</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">var</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">]):</span>
+    <span class="n">analysis_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;working_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;analysis_id&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;em_iterations&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s1">&#39;particles&#39;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span>
+        <span class="s1">&#39;curve_type&#39;</span><span class="p">:</span> <span class="s1">&#39;horz_indpnt&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;distribution&#39;</span><span class="p">:</span> <span class="s1">&#39;bernoulli&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;dist_specific_params&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="s1">&#39;beta_0&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;beta_1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;tau&#39;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;drop_outliers&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s1">&#39;zscore_within_subjects&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;subject_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s1">&#39;trials&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s1">&#39;predictor_var&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s1">&#39;dependent_var&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+        <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="s1">&#39;particle_chunks&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s1">&#39;bootstrap&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s1">&#39;bootstrap_run&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;scramble&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s1">&#39;scramble_run&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;scramble_style&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+
+    <span class="n">raw_data</span><span class="p">,</span> <span class="n">analysis_settings</span> <span class="o">=</span> <span class="n">run_importance_sampler</span><span class="p">(</span><span class="n">analysis_settings</span><span class="p">,</span> <span class="n">run_sampler</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Initialization">Initialization<a class="anchor-link" href="#Initialization"> </a></h2><p>All the code up to the first <code>em_iteration</code>.</p>
+<p>Some potential problem areas with my caching approach are evident. First, I don't use a consistent random seed ( or
+date) between cached and 'live' variables. I can choose a static random seed to cache and restore at each test, but
+will have to remember to reconfigure the code later. It's okay to reinitialize <code>time</code> at each execution.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">vectorize</span><span class="p">,</span> <span class="n">float64</span><span class="p">,</span> <span class="n">int32</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">pcitpy.preprocessing_setup</span> <span class="kn">import</span> <span class="n">preprocessing_setup</span>
+<span class="kn">from</span> <span class="nn">pcitpy.family_of_curves</span> <span class="kn">import</span> <span class="n">family_of_curves</span>
+<span class="kn">from</span> <span class="nn">pcitpy.common_to_all_curves</span> <span class="kn">import</span> <span class="n">common_to_all_curves</span>
+<span class="kn">from</span> <span class="nn">pcitpy.family_of_distributions</span> <span class="kn">import</span> <span class="n">family_of_distributions</span>
+<span class="kn">from</span> <span class="nn">pcitpy.helpers</span> <span class="kn">import</span> <span class="n">likratiotest</span><span class="p">,</span> <span class="n">truncated_normal</span>
+
+<span class="c1"># other dependencies</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">optimize</span>
+<span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">sio</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">special</span>
+
+
+<span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Start time </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">minute</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="s2">&quot;seed&quot;</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">var</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">]):</span>
+
+    <span class="c1"># Resetting the random number seed</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getstate</span><span class="p">()</span>
+
+    <span class="c1"># Preprocessing the data matrix and updating the analysis_settings struct with additional/missing information</span>
+    <span class="n">preprocessed_data</span><span class="p">,</span> <span class="n">ana_opt</span> <span class="o">=</span> <span class="n">preprocessing_setup</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">analysis_settings</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">raw_data</span>
+    <span class="k">del</span> <span class="n">analysis_settings</span>
+
+    <span class="c1"># Housekeeping</span>
+    <span class="n">importance_sampler</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Creating the output struct</span>
+    <span class="n">hold_betas_per_iter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;em_iterations&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>  <span class="c1"># Matrix to hold betas over em iterations</span>
+    <span class="n">exp_max_f_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;em_iterations&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>  <span class="c1"># Matrix to hold the f_values over em iterations</span>
+    <span class="n">normalized_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;em_iterations&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>  <span class="c1"># to hold the normalized weights</span>
+
+    <span class="c1"># fetch parameters</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;tau&#39;</span><span class="p">]</span>  <span class="c1"># Store the tau for convenience</span>
+    <span class="n">bounds</span> <span class="o">=</span> <span class="n">family_of_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;get_bounds&#39;</span><span class="p">)</span>  <span class="c1"># Get the curve parameter absolute bounds</span>
+    <span class="n">nParam</span> <span class="o">=</span> <span class="n">family_of_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;get_nParams&#39;</span><span class="p">)</span>  <span class="c1"># Get the number of curve parameters</span>
+    <span class="n">hold_betas</span> <span class="o">=</span> <span class="p">[</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;beta_0&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;beta_1&#39;</span><span class="p">]]</span>  <span class="c1"># Store the betas into a vector</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="First-em_iteration">First <code>em_iteration</code><a class="anchor-link" href="#First-em_iteration"> </a></h2><p>Two of these happen in our tests since beyond the second iteration function behavior is the same (as far as we know).</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">var</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">]):</span>
+
+    <span class="n">em</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># for em in range(ana_opt[&#39;em_iterations&#39;]):  # for every em iteration</span>
+    <span class="n">hold_betas_per_iter</span><span class="p">[</span><span class="n">em</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">hold_betas</span>  <span class="c1"># Store the logreg betas over em iterations</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Betas: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hold_betas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hold_betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;EM Iteration: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">em</span><span class="p">))</span>
+
+    <span class="c1"># Initialize the previous iteration curve parameters, weight vector, net_effects and dependent_var matrices</span>
+    <span class="c1"># Matrix to hold the previous iteration curve parameters</span>
+    <span class="n">prev_iter_curve_param</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">family_of_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;get_nParams&#39;</span><span class="p">)),</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>  <span class="c1"># Vector to hold normalized weights</span>
+
+    <span class="c1"># Matrix to hold the predictor variables (taking net effects if relevant) over all particles</span>
+    <span class="n">net_effects</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">]),</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">dependent_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>  <span class="c1"># can&#39;t be initialized in advance as we don&#39;t know its length (dropping outliers)</span>
+
+    <span class="c1"># Sampling curve parameters</span>
+    <span class="k">if</span> <span class="n">em</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># only for the first em iteration</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">common_to_all_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;initial_sampling&#39;</span><span class="p">,</span>
+                                        <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">])</span>  <span class="c1"># Good old uniform sampling</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># for em iterations 2, 3, etc</span>
+        <span class="c1"># Sample curve parameters from previous iteration&#39;s curve parameters based on normalized weights</span>
+        <span class="n">prev_iter_curve_param</span> <span class="o">=</span> <span class="n">param</span>  <span class="c1"># we need previous iteration&#39;s curve parameters to compute likelihood</span>
+
+        <span class="c1"># Here we sample curves (with repetitions) based on the weights</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">prev_iter_curve_param</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span>
+                                                        <span class="n">k</span><span class="o">=</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">normalized_w</span><span class="p">[</span><span class="n">em</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span> <span class="p">:]</span>
+        <span class="c1"># Add Gaussian noise since some curves are going to be identical due to the repetitions</span>
+        <span class="c1"># NOISE: Sample from truncated normal distribution using individual curve parameter bounds,</span>
+        <span class="c1"># mean = sampled curve parameters and sigma = tau</span>
+        <span class="k">for</span> <span class="n">npm</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nParam</span><span class="p">):</span>
+            <span class="n">param</span><span class="p">[:,</span> <span class="n">npm</span><span class="p">]</span> <span class="o">=</span> <span class="n">truncated_normal</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="n">npm</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="n">npm</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                                                <span class="n">param</span><span class="p">[:,</span> <span class="n">npm</span><span class="p">],</span> <span class="n">tau</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Check whether curve parameters lie within the upper and lower bounds</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="n">common_to_all_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;check_if_exceed_bounds&#39;</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;horz_indpnt&#39;</span><span class="p">:</span>
+        <span class="c1"># Check if the horizontal curve parameters are following the right trend i.e. x1 &lt; x2</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">common_to_all_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;sort_horizontal_params&#39;</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+
+    <span class="c1"># Compute the likelihood over all subjects (i.e. log probability mass function if logistic regression)</span>
+    <span class="c1">#  This is where we use the chunking trick II</span>
+    <span class="k">for</span> <span class="n">ptl_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">output_struct</span> <span class="o">=</span> <span class="n">family_of_curves</span><span class="p">(</span>
+            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;compute_likelihood&#39;</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">],</span>
+            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="n">param</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="p">:],</span>
+            <span class="n">hold_betas</span><span class="p">,</span> <span class="n">preprocessed_data</span><span class="p">,</span>
+            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;distribution&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Gather weights</span>
+        <span class="n">w</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">output_struct</span><span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Gather predictor variable</span>
+        <span class="n">net_effects</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> \
+            <span class="n">output_struct</span><span class="p">[</span><span class="s1">&#39;net_effects&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ptl_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Gather dependent variable only once, since it is the same across all ptl_idx</span>
+            <span class="n">dependent_var</span> <span class="o">=</span> <span class="n">output_struct</span><span class="p">[</span><span class="s1">&#39;dependent_var&#39;</span><span class="p">]</span>
+
+    <span class="k">del</span> <span class="n">output_struct</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">w</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;NaNs in normalized weight vector w!&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Compute the p(theta) and q(theta) weights</span>
+    <span class="k">if</span> <span class="n">em</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">p_theta_minus_q_theta</span> <span class="o">=</span> <span class="n">compute_weights</span><span class="p">(</span>
+            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">normalized_w</span><span class="p">[</span><span class="n">em</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">prev_iter_curve_param</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;wgt_chunks&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">])</span>
+        <span class="n">w</span> <span class="o">+=</span> <span class="n">p_theta_minus_q_theta</span>
+
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">special</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>  <span class="c1"># Normalize the weights using logsumexp to avoid numerical underflow</span>
+    <span class="n">normalized_w</span><span class="p">[</span><span class="n">em</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">w</span>  <span class="c1"># Store the normalized weights</span>
+
+    <span class="c1"># Optimize betas using fminunc</span>
+    <span class="n">optimizing_function</span> <span class="o">=</span> <span class="n">family_of_distributions</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;distribution&#39;</span><span class="p">],</span> <span class="s1">&#39;fminunc_both_betas&#39;</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">net_effects</span><span class="p">,</span>
+                                                    <span class="n">dependent_var</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">])</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">optimizing_function</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hold_betas</span><span class="p">),</span> <span class="n">jac</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;return_all&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="n">hold_betas</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">f_value</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">fun</span>
+
+    <span class="n">exp_max_f_values</span><span class="p">[</span><span class="n">em</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_value</span>  <span class="c1"># gather the f_values over em iterations</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Second-em_iteration">Second <code>em_iteration</code><a class="anchor-link" href="#Second-em_iteration"> </a></h2><p>Two of these happen in our tests since beyond the second iteration function behavior is the same (as far as we know).
+Testing is currently focused on this second iteration.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">]):</span>
+
+    <span class="n">em</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># for em in range(ana_opt[&#39;em_iterations&#39;]):  # for every em iteration</span>
+    <span class="n">hold_betas_per_iter</span><span class="p">[</span><span class="n">em</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">hold_betas</span>  <span class="c1"># Store the logreg betas over em iterations</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Betas: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hold_betas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hold_betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;EM Iteration: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">em</span><span class="p">))</span>
+
+    <span class="c1"># Initialize the previous iteration curve parameters, weight vector, net_effects and dependent_var matrices</span>
+    <span class="c1"># Matrix to hold the previous iteration curve parameters</span>
+    <span class="n">prev_iter_curve_param</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">family_of_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;get_nParams&#39;</span><span class="p">)),</span>
+                                    <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>  <span class="c1"># Vector to hold normalized weights</span>
+
+    <span class="c1"># Matrix to hold the predictor variables (taking net effects if relevant) over all particles</span>
+    <span class="n">net_effects</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">]),</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">dependent_var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>  <span class="c1"># can&#39;t be initialized in advance as we don&#39;t know its length (dropping outliers)</span>
+
+    <span class="c1"># Sampling curve parameters</span>
+    <span class="k">if</span> <span class="n">em</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># only for the first em iteration</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">common_to_all_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;initial_sampling&#39;</span><span class="p">,</span>
+                                        <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">])</span>  <span class="c1"># Good old uniform sampling</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># for em iterations 2, 3, etc</span>
+        <span class="c1"># Sample curve parameters from previous iteration&#39;s curve parameters based on normalized weights</span>
+        <span class="n">prev_iter_curve_param</span> <span class="o">=</span> <span class="n">param</span>  <span class="c1"># we need previous iteration&#39;s curve parameters to compute likelihood</span>
+
+        <span class="c1"># Here we sample curves (with repetitions) based on the weights</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">prev_iter_curve_param</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span>
+                                                        <span class="n">k</span><span class="o">=</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">weights</span><span class="o">=</span><span class="n">normalized_w</span><span class="p">[</span><span class="n">em</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span> <span class="p">:]</span>
+        <span class="c1"># Add Gaussian noise since some curves are going to be identical due to the repetitions</span>
+        <span class="c1"># NOISE: Sample from truncated normal distribution using individual curve parameter bounds,</span>
+        <span class="c1"># mean = sampled curve parameters and sigma = tau</span>
+        <span class="k">for</span> <span class="n">npm</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nParam</span><span class="p">):</span>
+            <span class="n">param</span><span class="p">[:,</span> <span class="n">npm</span><span class="p">]</span> <span class="o">=</span> <span class="n">truncated_normal</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="n">npm</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="n">npm</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                                                <span class="n">param</span><span class="p">[:,</span> <span class="n">npm</span><span class="p">],</span> <span class="n">tau</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Check whether curve parameters lie within the upper and lower bounds</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="n">common_to_all_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;check_if_exceed_bounds&#39;</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;horz_indpnt&#39;</span><span class="p">:</span>
+        <span class="c1"># Check if the horizontal curve parameters are following the right trend i.e. x1 &lt; x2</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="n">common_to_all_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;sort_horizontal_params&#39;</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+
+        <span class="c1"># Compute the likelihood over all subjects (i.e. log probability mass function if logistic regression)</span>
+    <span class="c1">#  This is where we use the chunking trick II</span>
+    <span class="k">for</span> <span class="n">ptl_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">output_struct</span> <span class="o">=</span> <span class="n">family_of_curves</span><span class="p">(</span>
+            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;compute_likelihood&#39;</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">],</span>
+            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="n">param</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="p">:],</span>
+            <span class="n">hold_betas</span><span class="p">,</span> <span class="n">preprocessed_data</span><span class="p">,</span>
+            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;distribution&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Gather weights</span>
+        <span class="n">w</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">output_struct</span><span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Gather predictor variable</span>
+        <span class="n">net_effects</span><span class="p">[:,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> \
+            <span class="n">output_struct</span><span class="p">[</span><span class="s1">&#39;net_effects&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">ptl_idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Gather dependent variable only once, since it is the same across all ptl_idx</span>
+            <span class="n">dependent_var</span> <span class="o">=</span> <span class="n">output_struct</span><span class="p">[</span><span class="s1">&#39;dependent_var&#39;</span><span class="p">]</span>
+
+    <span class="k">del</span> <span class="n">output_struct</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">w</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;NaNs in normalized weight vector w!&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Compute the p(theta) and q(theta) weights</span>
+    <span class="k">if</span> <span class="n">em</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">p_theta_minus_q_theta</span> <span class="o">=</span> <span class="n">compute_weights</span><span class="p">(</span>
+            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">],</span> <span class="n">normalized_w</span><span class="p">[</span><span class="n">em</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">prev_iter_curve_param</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;wgt_chunks&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;resolution&#39;</span><span class="p">])</span>
+        <span class="n">w</span> <span class="o">+=</span> <span class="n">p_theta_minus_q_theta</span>
+
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">special</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>  <span class="c1"># Normalize the weights using logsumexp to avoid numerical underflow</span>
+    <span class="n">normalized_w</span><span class="p">[</span><span class="n">em</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">w</span>  <span class="c1"># Store the normalized weights</span>
+
+    <span class="c1"># Optimize betas using fminunc</span>
+    <span class="n">optimizing_function</span> <span class="o">=</span> <span class="n">family_of_distributions</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;distribution&#39;</span><span class="p">],</span> <span class="s1">&#39;fminunc_both_betas&#39;</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">net_effects</span><span class="p">,</span>
+                                                    <span class="n">dependent_var</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">])</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">optimizing_function</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">hold_betas</span><span class="p">),</span> <span class="n">jac</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;disp&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;return_all&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="n">hold_betas</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">f_value</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">fun</span>
+
+    <span class="n">exp_max_f_values</span><span class="p">[</span><span class="n">em</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_value</span>  <span class="c1"># gather the f_values over em iterations</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">hold_betas_per_iter</span><span class="p">[</span><span class="n">em</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">hold_betas</span>  <span class="c1"># Store away the last em iteration betas</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Final Betas: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1"> &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hold_betas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">hold_betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="c1"># Flipping the vertical curve parameters if beta_1 is negative</span>
+<span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;flip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">neg_beta_idx</span> <span class="o">=</span> <span class="n">hold_betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span>
+<span class="k">if</span> <span class="n">neg_beta_idx</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;!!!!!!!!!!!!!!!!!!!! Beta 1 is flipped !!!!!!!!!!!!!!!!!!!!&#39;</span><span class="p">)</span>
+    <span class="n">hold_betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">hold_betas</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="n">common_to_all_curves</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;flip_vertical_params&#39;</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+    <span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;flip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>  <span class="c1"># Clearing the weight vector</span>
+
+<span class="c1"># Used for a likelihoods ratio test to see if our beta1 value is degenerate</span>
+<span class="n">w_null_hypothesis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;particles&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+<span class="c1"># The null hypothesis for the likelihoods ratio test states that our model y_hat = beta_0 + beta_1 * predictor</span>
+<span class="c1"># variable is no different than the simpler model y_hat = beta_0 + beta_1 * predictor variable WHERE BETA_1 =</span>
+<span class="c1"># ZERO i.e. our model is y_hat = beta_0</span>
+<span class="n">null_hypothesis_beta</span> <span class="o">=</span> <span class="p">[</span><span class="n">hold_betas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">ptl_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">ana_opt</span><span class="o">.</span><span class="n">ptl_chunk_idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="n">output_struct</span> <span class="o">=</span> <span class="n">family_of_curves</span><span class="p">(</span>
+        <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;compute_likelihood&#39;</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">],</span>
+        <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="n">param</span><span class="p">[</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">:],</span> <span class="n">hold_betas</span><span class="p">,</span>
+        <span class="n">preprocessed_data</span><span class="p">,</span>
+        <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;distribution&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">])</span>
+    <span class="n">w</span><span class="p">[</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;ptl_chunk_idx&#39;</span><span class="p">][</span><span class="n">ptl_idx</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">output_struct</span><span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">]</span>
+
+<span class="c1"># this code computes the log likelihood of the data under the null hypothesis i.e. using null_hypothesis_beta</span>
+<span class="c1"># instead of hold_betas -- it&#39;s &quot;lazy&quot; because, unlike the alternative hypothesis, we don&#39;t have to compute the</span>
+<span class="c1"># data likelihood for each particle because it&#39;s exactly the same for each particle (b/c compute_likelihood uses</span>
+<span class="c1"># z = beta_1 * x + beta_0, but (recall that our particles control the value of x in this equation) beta_1 is zero</span>
+<span class="c1"># for the null hypothesis) that&#39;s why we pass in the zero vector representing a single particle with irrelevant</span>
+<span class="c1"># weights so we don&#39;t have to do it for each particle unnecessarily</span>
+<span class="n">output_struct_null_hypothesis_lazy</span> <span class="o">=</span> <span class="n">family_of_curves</span><span class="p">(</span>
+    <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;curve_type&#39;</span><span class="p">],</span> <span class="s1">&#39;compute_likelihood&#39;</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;net_effect_clusters&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="n">null_hypothesis_beta</span><span class="p">,</span> <span class="n">preprocessed_data</span><span class="p">,</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;distribution&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;dist_specific_params&#39;</span><span class="p">],</span>
+    <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;data_matrix_columns&#39;</span><span class="p">])</span>
+<span class="n">data_likelihood_null_hypothesis</span> <span class="o">=</span> <span class="n">output_struct_null_hypothesis_lazy</span><span class="p">[</span><span class="s1">&#39;w&#39;</span><span class="p">]</span>
+<span class="n">data_likelihood_alternative_hypothesis</span> <span class="o">=</span> <span class="n">w</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="n">p_theta_minus_q_theta</span>
+<span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">w</span><span class="p">)):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;NaNs in normalized weight vector w!&#39;</span><span class="p">)</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">special</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>  <span class="c1"># Normalize the weights using logsumexp to avoid numerical underflow</span>
+<span class="n">normalized_w</span><span class="p">[</span><span class="n">em</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">w</span>  <span class="c1"># Store the normalized weights</span>
+
+<span class="c1"># Added for debugging chi-sq, might remove eventually</span>
+<span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;data_likelihood_alternative_hypothesis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_likelihood_alternative_hypothesis</span>
+<span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;data_likelihood_null_hypothesis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_likelihood_null_hypothesis</span>
+
+<span class="c1"># we calculate the data_likelihood over ALL particles by multiplying the data_likelihood for each particle by</span>
+<span class="c1"># that particle&#39;s importance weight</span>
+<span class="n">dummy_var</span><span class="p">,</span> <span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;likratiotest&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">likratiotest</span><span class="p">(</span>
+    <span class="n">w</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">data_likelihood_alternative_hypothesis</span><span class="p">),</span> <span class="n">data_likelihood_null_hypothesis</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">normalized_w</span><span class="p">)):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;NaNs in normalized weights vector!&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">exp_max_f_values</span><span class="p">)):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;NaNs in Expectation maximilzation fval matrix!&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">hold_betas_per_iter</span><span class="p">)):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;NaNs in hold betas matrix!&#39;</span><span class="p">)</span>
+
+<span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;normalized_weights&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">normalized_w</span>
+<span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;exp_max_fval&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">exp_max_f_values</span>
+<span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;hold_betas_per_iter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hold_betas_per_iter</span>
+<span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;curve_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+<span class="n">importance_sampler</span><span class="p">[</span><span class="s1">&#39;analysis_settings&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ana_opt</span>
+
+<span class="k">if</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;bootstrap&#39;</span><span class="p">]:</span>
+    <span class="n">sio</span><span class="o">.</span><span class="n">savemat</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">_b</span><span class="si">{}</span><span class="s1">_importance_sampler.mat&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;target_dir&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;analysis_id&#39;</span><span class="p">],</span>
+                                                            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;bootstrap_run&#39;</span><span class="p">]),</span>
+                <span class="p">{</span><span class="s1">&#39;importance_sampler&#39;</span><span class="p">:</span> <span class="n">importance_sampler</span><span class="p">})</span>
+<span class="k">elif</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;scramble&#39;</span><span class="p">]:</span>
+    <span class="n">sio</span><span class="o">.</span><span class="n">savemat</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">_s</span><span class="si">{}</span><span class="s1">_importance_sampler.mat&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;target_dir&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;analysis_id&#39;</span><span class="p">],</span>
+                                                            <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;scramble_run&#39;</span><span class="p">]),</span>
+                <span class="p">{</span><span class="s1">&#39;importance_sampler&#39;</span><span class="p">:</span> <span class="n">importance_sampler</span><span class="p">})</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">sio</span><span class="o">.</span><span class="n">savemat</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">_importance_sampler.mat&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;target_dir&#39;</span><span class="p">],</span> <span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;analysis_id&#39;</span><span class="p">]),</span>
+                <span class="p">{</span><span class="s1">&#39;importance_sampler&#39;</span><span class="p">:</span> <span class="n">importance_sampler</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Results are stored in be stored in </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ana_opt</span><span class="p">[</span><span class="s1">&#39;target_dir&#39;</span><span class="p">]))</span>
+
+<span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Finish time </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">minute</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -48,15 +542,16 @@ main paper and the "curve-fitting algorithm details" section of the supplementar
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h2 id="importance_sampler" class="doc_header"><code>importance_sampler</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/importance_sampler.py#L25" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>importance_sampler</code>(<strong><code>raw_data</code></strong>, <strong><code>analysis_settings</code></strong>)</p>
+<h2 id="importance_sampler" class="doc_header"><code>importance_sampler</code><a href="https://github.com/githubpsyche/pcitpy/tree/master/pcitpy/importance_sampler.py#L7" class="source_link" style="float:right">[source]</a></h2><blockquote><p><code>importance_sampler</code>(<strong><code>raw_data</code></strong>, <strong><code>analysis_settings</code></strong>)</p>
 </blockquote>
 <p>Recovers a curve that best explains the relationship between the predictor and dependent variables</p>
 <p><strong>Arguments</strong>:</p>
 <ul>
 <li>raw_data: The data matrix (total number of trials x 6 columns). Refer to RUN_IMPORTANCE_SAMPLER()</li>
-<li>analysis_settings: A struct that holds algorithm relevant settings. Refer to RUN_IMPORTANCE_SAMPLER()</li>
-</ul>
+<li><p>analysis_settings: A struct that holds algorithm relevant settings. Refer to RUN_IMPORTANCE_SAMPLER()</p>
 <p>Saves a .mat file in <code>current_path/analysis_id/analysis_id_importance_sampler.mat</code></p>
+</li>
+</ul>
 
 </div>
 
